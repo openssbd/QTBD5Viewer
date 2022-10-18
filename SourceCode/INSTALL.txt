@@ -105,3 +105,10 @@ On Mac OSX and Linux call make tool
 On Windows inside the Visual Studio select the target "Release" and "x64". And finally Build the
 application selecting from the main menu "Build->Build solution"
 
+4) Execute
+
+a) On Linux the executable file "BD5Viewer" will be in the "bin" subdirectory
+b) On Mac OSX you have the option of execute from "Finder". Inside the bin subdirectory double click
+on the "BD5Viewer.app" Package. Or if you prefer from a terminal move into 
+the /bin/BD5Viewer.app/Contents/MacOS directory and execute "BD5Viewer"
+c) On Windows the executable file "BD5Viewer.exe" will be in the "bin" subdirectory
