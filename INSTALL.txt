@@ -1,0 +1,107 @@
+/*************************************************************************************
+
+Riken. Center for Biosystems Dynamics Research. Laboratory for Developmental Dynamics
+
+QTBD5Viewer. An application to visualize BD5 files.
+
+2022/10/14
+*************************************************************************************/
+
+
+REQUIREMENTS.
+
+The application was tested on PCs with the next operating systems:
+
+* Windows 11 (version 22H2)
+* Mac OSX (Monterey version 12.6)
+* Linux (ubuntu distribution version 22.04 LTS)
+
+
+INSTALLER
+For now we offer a windows version as an installer. This include all the 
+required software for its execution.
+
+
+BUILDING FROM SOURCE CODE:
+
+In order to compile from source code please fulfil the next pre-requirements:
+
+1) C++ compiler
+
+The software was developed with C++17. Therefore a C++17 compliant
+compiler is required to compile the program. 
+
+This is the list of compiler used by operating system platforms:
+  
+* Windows: MSVC (version 14.3)
+* Mac OSX: clang (version 14)
+* Linux: gcc (version 11.2.0)
+
+On Mac OSX and Linux you require the Make tool for compiling.
+On Windows you require a Visual Studio Community or similar environment (we use version 2022)
+
+2) QT 
+
+The application was created with QT version 6.3.1
+The windows installer includes all the dll files required for executing the application.
+If you require compile the application it is necessary to download the open source QT SDK from:
+
+https://www.qt.io/download
+
+3) HDF5
+
+The HDF group offers serveral versions of its C++ API.
+We selected the version 1.12 and we compiled from source code in 64-bits (x64). 
+In order to localize correctly the HDF5 headers and libraries please modify the path in the 
+file "BD5Viewer.pro" to point to your correct paths.
+
+
+With the three softares previously listed you are able to compile the application:
+
+1) Generate compilation environment
+ 
+For Mac OSX and linux, on a terminal go to the application home directory. Call the qmake
+command in order to generate a Makefile
+
+	% qmake -o Makefile BD5Viewer.pro
+
+For Windows, first check that the Qt bin directory is listed in your PATH environment path. 
+Then, on a command prompt terminal go to the application home directory. Call the qmake
+command in order to generate a Visual Studio project
+
+	> qmake.exe -tp vc BD5Viewer.pro 
+
+2) Prepare to compile
+
+This step is only necessary in Windows. Open the generated project solution "BD5Viewer.sln"
+with Visual Studio Community (we used version 2022). 
+
+a) On the "Solution Explorer" open the properties of the project by clicking with the right 
+mouse over the name of the project "BD5Viewer". A menu is open select "Properties".
+
+b) On the "BD5Viewer Property Pages" window select "C/C++" and then select "Language". Modify
+the "C++ Language Standard" into "ISO C++17 Standard(/std:c++17)
+
+c) Select "C/C++" and then "General". On the "Additional Include Directories" add the
+path where the HDF5 include file is stored.
+
+d) Select "Linker" and then "General". On the "Additional Library Directories" add the path
+where the HDF5 lib file is stored.
+
+e) Select "Linker" and then "Input". On the "Additional Dependencies" add the next libraries
+	openGL32.lib
+	GlU32.lib
+	libhdf5.lib		
+	libhdf5_cpp.lib
+
+for "libhdf5.lib" and libhd5_cpp.lib could be better to write full path
+
+3) Compile
+
+On Mac OSX and Linux call make tool 
+
+	% make
+
+On Windows inside the Visual Studio select the target "Release" and "x64". And finally Build the
+application selecting from the main menu "Build->Build solution"
+
