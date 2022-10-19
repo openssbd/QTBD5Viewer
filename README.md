@@ -2,7 +2,7 @@
 
 ### Copyright(C) 2022 RIKEN
 
-## Synposis
+## Synopsis
 ----
 A visualizer for BD5-format files. 
 
