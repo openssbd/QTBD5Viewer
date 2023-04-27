@@ -288,6 +288,7 @@ vector<BD5::Snapshot> BD5File::Read()
                 vector<EntityData> vecZeroEntities; // For Point, Circle, Sphere
                 vector<EntityData> currentEntities; // For Line, Face
                 int currentSID = 0;
+                std::string currentID = "Nothing";
 
                 // Entities capture
                 for (int i = 0; i < currentDataset.NumItems(); i++)
@@ -351,16 +352,17 @@ vector<BD5::Snapshot> BD5File::Read()
                             EntityData objData = { itemID, itemLabel, values };
 
                             int sID = currentDataset.ExtractNumberAsAt<int>("sID", i);
-                            if (sID == currentSID)
-                            {
-                                currentEntities.push_back(objData);
-                            }
-                            else
+                            if (sID != currentSID || ((i != 0) && (currentID != itemID)))
                             {
                                 groupedEntities.push_back(currentEntities);
                                 currentEntities = vector<EntityData>{objData};
                                 currentSID = sID;
                             }
+                            else
+                            {
+                                currentEntities.push_back(objData);
+                            }
+                            currentID = itemID;
                         }
                         break;
                         case EntityType::Undefined:
