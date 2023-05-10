@@ -287,7 +287,7 @@ vector<BD5::Snapshot> BD5File::Read()
                 vector<vector<EntityData>> groupedEntities;
                 vector<EntityData> vecZeroEntities; // For Point, Circle, Sphere
                 vector<EntityData> currentEntities; // For Line, Face
-                int currentSID = 0;
+                int currentSID = -10000;
                 std::string currentID = "Nothing";
 
                 // Entities capture
@@ -351,8 +351,22 @@ vector<BD5::Snapshot> BD5File::Read()
 
                             EntityData objData = { itemID, itemLabel, values };
 
+                            if (i == 0) {
+                                if ( currentDataset.ContainsElement("sID") )
+                                {
+                                    currentSID = currentDataset.ExtractNumberAsAt<int>("sID", i);
+                                    currentID = itemID;
+                                }
+                                else {
+                                    std::ostringstream ss;
+                                    ss << __FILE__ << ":" << __func__ << "() " << "line/face does not define sID member element. H5 file incomplete data";
+                                    logger.log(string(ss.str()), LogType::ERR);
+                                    break;
+                                }
+                            }
                             int sID = currentDataset.ExtractNumberAsAt<int>("sID", i);
-                            if (sID != currentSID || ((i != 0) && (currentID != itemID)))
+
+                            if ((sID != currentSID) || (currentID != itemID) )
                             {
                                 groupedEntities.push_back(currentEntities);
                                 currentEntities = vector<EntityData>{objData};

@@ -37,11 +37,12 @@ MOC_DIR=build
 
 # On mac the HDF5 library was compilated from source code, modify for Homebrew or other installation method
 macx: {
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
-    INCLUDEPATH += /usr/local/HDF_Group/HDF5/1.12.2/include
+    QMAKE_MAC_SDK = macosx13.3
+    QMAKE_MACOSX_DEPLOYMENT_TARGET=13.3
+    INCLUDEPATH += /usr/local/hdf5/include
     INCLUDEPATH += /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers
     LIBS += -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -framework GLUT
-    LIBS += -L/usr/local/HDF_Group/HDF5/1.12.2/lib -lhdf5 -lhdf5_cpp
+    LIBS += -L/usr/local/hdf5/lib -lhdf5 -lhdf5_cpp
 }
 
 # Linux

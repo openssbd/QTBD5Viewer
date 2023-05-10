@@ -289,7 +289,7 @@ void GLWidget::resizeGL(int w, int h)
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0, (GLfloat)w / (GLfloat)h, 0.01f, 10000.0);
+    gluPerspective(45.0, (GLfloat)w / (GLfloat)h, 0.01f, 100000.0);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -314,7 +314,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-    QPoint numPixels = event->pixelDelta();
+    // QPoint numPixels = event->pixelDelta();
+    QPoint numPixels = event->angleDelta();
 
     if (!numPixels.isNull()) {
         cameraZ += numPixels.y() * deltaZ;
@@ -328,10 +329,10 @@ void GLWidget::initializeViewer()
     m_xRot = 0.0;
     m_yRot = 0.0;
     m_zRot = 0.0;
-    // cout << "x " << boundaries.minX << " X " << boundaries.maxX;
-    // cout << " y " << boundaries.minY << " Y " << boundaries.maxY;
-    // cout << " z " << boundaries.minZ << " Z " << boundaries.maxZ << endl;
-    // cout << " Scales " << scales.XScale() << " " << scales.YScale() << " " << scales.ZScale() << endl;
+    cout << "x " << boundaries.minX << " X " << boundaries.maxX;
+    cout << " y " << boundaries.minY << " Y " << boundaries.maxY;
+    cout << " z " << boundaries.minZ << " Z " << boundaries.maxZ << endl;
+    cout << " Scales " << scales.XScale() << " " << scales.YScale() << " " << scales.ZScale() << endl;
     if ((boundaries.maxZ == boundaries.minZ) && (boundaries.maxZ == 0.0)) {
         cameraZ = boundaries.maxX / 2;
         deltaZ = 1.0;
