@@ -1,29 +1,43 @@
 #include <QMouseEvent>
 #include <QCoreApplication>
 #include <QColor>
+#include <QEventLoop>
+#include <QTimer>
 #include <math.h>
 #include "glwidget.h"
 #include "BD5File.h"
+#include "utils.h"
 
 GLWidget::GLWidget(QWidget *parent) : 
     QOpenGLWidget(parent)
 {
     m_core = QSurfaceFormat::defaultFormat().profile() == QSurfaceFormat::CoreProfile;
+    QList<int> gamepads = QGamepadManager::instance()->connectedGamepads();
+    if (!gamepads.isEmpty()) {
+        qDebug() << "Gamepad detected ";
+        m_gamepad = new QGamepad(*gamepads.begin(), this);
+        initializeGamepad(this);
+    } else {
+        qDebug() << "No gamepads detected ";
+    }
 }
 
 GLWidget::~GLWidget()
 {
     gluDeleteQuadric(qobj);
+    if (m_gamepad != nullptr) {
+        delete m_gamepad;
+    }
 }
 
 QSize GLWidget::minimumSizeHint() const
 {
-    return QSize(50, 50);
+    return QSize(200, 200);
 }
 
 QSize GLWidget::sizeHint() const
 {
-    return QSize(400, 400);
+    return QSize(800, 600);
 }
 
 static void qNormalizeAngle(int &angle)
@@ -34,15 +48,23 @@ static void qNormalizeAngle(int &angle)
         angle -= 360 * 16;
 }
 
+/***
+ * From here starts the Qt slots functions
+*/
 void GLWidget::setTimeToVisualize(int time)
 {
     if (snapshots.empty())
         return;
     try
     {
-        current_snapshot = snapshots.at(time);
-        if (scales.TScale() > 0.0)
-            emit snapshotTime( current_snapshot.Time() * scales.TScale() );
+        emit snapshotTime( snapshots[time].Time() * scales.TScale() );
+        auto names = file.GetLabelsAtTime(time);
+        // for (auto &name: names) {
+        //     cout << time << " " << name << " ";
+        // }
+        // cout << endl;
+        setCurrentSnapshot(time, snapshots[time], names);
+
         update();
     }
     catch(const std::exception& e)
@@ -80,10 +102,11 @@ void GLWidget::setZRotation(int angle)
 
 void GLWidget::setGeometry(QString filePath)
 {
+    snapshots.clear();
     try
     {
-        BD5File file = BD5File(filePath.toStdString());
-        snapshots = file.Read();
+        snapshots = file.Read(filePath.toStdString());
+
         scales = file.Scales();
         boundaries = file.GetBoundaries();
         boundaries.maxX = boundaries.maxX * scales.XScale();
@@ -93,27 +116,40 @@ void GLWidget::setGeometry(QString filePath)
         boundaries.minY = boundaries.minY * scales.YScale();        
         boundaries.minZ = boundaries.minZ * scales.ZScale();
         gridSpacing = getGridSpacing(boundaries);
-        initializeViewer();
-        current_snapshot = snapshots.front();
-        emit readTimeUnitsInfo( (snapshots.size() - 1), scales.TUnit() );
-        update();
-    } catch(...)
-    {
-        cout << "Review log file for errors." << '\n';
+        if (file.HasTracks()) {
+            tracks = file.GetTracks();
+        }
+    } 
+    catch (const std::out_of_range& oor) {
+        cout << "Out of Range " << oor.what() << endl;
+        return;
     }
+    catch (const std::exception& e) {
+        cout << "Error at reading file " << endl;
+        cout << e.what() << endl;
+        return;
+    }
+
+    initializeViewer();
+    auto objNames = file.ObjectsNames();
+    objsVisibility.clear();
+    for (auto &obj : objNames)
+    {
+        objsVisibility[obj] = true;
+    }
+
+    auto labelNames = file.GetLabelsAtTime(0);
+    setCurrentSnapshot(0, snapshots.front(), labelNames);
+
+    emit readTimeUnitsInfo((snapshots.size() - 1), scales.TUnit());
+    emit objectsNames(file.ObjectsNames());
+
+    update();
 }
 
 void GLWidget::resetPosition()
 {
     initializeViewer();
-    update();
-}
-
-void GLWidget::setGeometryColor(QColor color)
-{
-    redColor = color.redF();
-    greenColor = color.greenF();
-    blueColor = color.blueF();
     update();
 }
 
@@ -135,6 +171,51 @@ void GLWidget::setGrid3DFlag(bool flag)
     update();
 }
 
+void GLWidget::setTracksFlag(bool flag)
+{
+    showTracks = flag;
+    update();
+}
+
+void GLWidget::setObjectShowFlag(string key, bool flag) {
+    try {
+        objsVisibility[key] = flag;
+        // cout << "Check " << key << " " << flag << " " << objsVisibility.size() << endl;
+        update(); 
+    }
+    catch (const std::exception& e) {
+        cout << e.what() << endl;
+    }
+}
+
+void GLWidget::setLabelColor(string key, vector<float> color) {
+    try {
+        currentSnapshot.labelsColors[key] = color;
+        update();
+    }
+    catch (const std::exception& e) {
+        cout << e.what() << endl;
+    }
+}
+
+void GLWidget::setLabelsOneColor(vector<float> color) {
+    for (auto& [key, val]: currentSnapshot.labelsColors)
+    {
+        val = color;
+    }
+    update();
+}
+
+void GLWidget::setDefaultLabelsColors()
+{
+    auto labels = file.GetLabelsAtTime(currentSnapshot.index);
+    setDefaultPaletteColors(labels);
+    update();
+}
+/**
+ * End of Qt slots functions
+*/
+
 void GLWidget::initializeGL()
 {
     initializeOpenGLFunctions();
@@ -152,15 +233,17 @@ void GLWidget::initializeGL()
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
 }
 
-
 void GLWidget::paintGL()
 {
     if (snapshots.empty()) 
         return;
+
+    try {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
+
     glEnable(GL_LIGHT0);
     glEnable(GL_SMOOTH);
     glEnable(GL_COLOR_MATERIAL);
@@ -168,12 +251,27 @@ void GLWidget::paintGL()
     glTranslatef( 0.0, 0.0, -cameraZ);
     glRotatef(m_xRot, 1.0, 0.0, 0.0);
     glRotatef(m_yRot, 0.0, 1.0, 0.0);
-    if (scales.Type() == SpaceTime_t::ThreeDimension || scales.Type() == SpaceTime_t::ThreeDimensionAndTime)
+    if (scales.Type() == SpaceTime_t::ThreeDimension || scales.Type() == SpaceTime_t::ThreeDimensionAndTime) {
         glRotatef(m_zRot, 0.0, 0.0, 1.0);
-    glTranslatef(-boundaries.maxX/2, -boundaries.maxY/2, -boundaries.maxZ/2);
+    }
+    float cameraX = boundaries.minX+(boundaries.maxX-boundaries.minX)/2;
+    float cameraY = boundaries.minY+(boundaries.maxY-boundaries.minY)/2;
+    float cameraZ = boundaries.maxZ/2;
 
+    glTranslatef(-cameraX, -cameraY, -cameraZ);
+
+    auto& current_snapshot = currentSnapshot.snapshot;
+    int objIndex = 0;
     for (auto& object : current_snapshot.GetObjects() )
     {
+        // Make the object invisible according to the flag
+        auto key = file.ObjectsNames().at(objIndex);
+        objIndex++;
+        if (objsVisibility[key] == false) 
+        {
+            continue;
+        }
+
         for (auto& subObject : object.GetAllSubObjects() )
         {
             EntityType subObjectType = subObject.first;
@@ -191,9 +289,14 @@ void GLWidget::paintGL()
                         glBegin(GL_LINE_STRIP);
                     if (subObjectType == EntityType::Face)
                         glBegin(GL_POLYGON);
-                    glColor3f(redColor, greenColor, blueColor);
                     for (auto &entity : entities)
                     {
+                        // Eliminate last element used for storing the polyline box center
+                        if (&entity == &entities.back()) {
+                            continue;
+                        } 
+
+                        defineGLColor(entity.Label);
                         switch (scales.Type())
                         {
                             case SpaceTime_t::TwoDimension:
@@ -222,9 +325,10 @@ void GLWidget::paintGL()
                     auto &entities = entitiesBySID.front();
                     glPointSize(pointSize);
                     glBegin(GL_POINTS);
-                    glColor3f(redColor, greenColor, blueColor);
+
                     for (auto &entity : entities)
                     {
+                        defineGLColor(entity.Label);
                         switch(scales.Type())
                         {
                             case SpaceTime_t::TwoDimension:
@@ -256,14 +360,15 @@ void GLWidget::paintGL()
                 auto &entitiesBySID = subObject.second;
                 {
                     auto &entities = entitiesBySID.front();
-                    glColor3f(redColor, greenColor, blueColor);
                     for (auto &entity : entities)
                     {
+                        defineGLColor(entity.Label);
                         glPushMatrix();
                         glTranslatef(scales.XScale() * entity.X(),
                                      scales.YScale() * entity.Y(),
                                      scales.ZScale() * entity.Z());
-                        gluSphere(qobj, entity.Radius(), 15, 10);
+                        // gluSphere(qobj, entity.Radius(), 15, 10);
+                        gluSphere(qobj, entity.Radius(), 6, 4);
                         glPopMatrix();
                     }
                 }
@@ -274,15 +379,22 @@ void GLWidget::paintGL()
             }
         }
     }
+
     if (showAxes)
         drawAxes();
     if (showGrid2D)
         drawGrid2D();
     if (showGrid3D)
         drawGrid3D();
+    if (showTracks && (tracks.size() > 0) ) {
+        drawTracks(currentSnapshot.index);
+    }
     glFlush();
-}
+    } catch (const std::exception& e) {
+            cout << e.what() << endl;
+    }
 
+}
 
 void GLWidget::resizeGL(int w, int h)
 {
@@ -290,6 +402,7 @@ void GLWidget::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45.0, (GLfloat)w / (GLfloat)h, 0.01f, 100000.0);
+    // glOrtho(-10.0, 70.0, -10.0, 60.0, 0, 10000);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -304,17 +417,16 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     int dy = event->position().toPoint().y() - m_lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
-        setXRotation(m_xRot + 8 * dy);
-        setYRotation(m_yRot + 8 * dx);
+        setXRotation(m_xRot + 4 * dy);
+        setYRotation(m_yRot + 4 * dx);
     } else if (event->buttons() & Qt::RightButton) {
-        // TODO: translation
+
     }
     m_lastPos = event->position().toPoint();
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-    // QPoint numPixels = event->pixelDelta();
     QPoint numPixels = event->angleDelta();
 
     if (!numPixels.isNull()) {
@@ -326,6 +438,7 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 
 void GLWidget::initializeViewer()
 {
+    // TODO translate the camera, we are moving in Z axis.
     m_xRot = 0.0;
     m_yRot = 0.0;
     m_zRot = 0.0;
@@ -342,6 +455,235 @@ void GLWidget::initializeViewer()
         cameraZ = (boundaries.maxZ - boundaries.minZ) * 4.0;
         deltaZ = (boundaries.maxZ - boundaries.minZ) / 100.0;
     }
+}
+
+void GLWidget::initializeGamepad(QWidget* w)
+{
+    if (m_gamepad == nullptr) {
+        cout << "Gamepad null pointer";
+        return;
+    }
+    connect(m_gamepad, &QGamepad::axisLeftXChanged, w, 
+            [&](double value) { 
+                // qDebug() << "Jockstick Left X" << value;
+                cameraZ -= deltaZ * value;
+                update();
+                if ((value >= 1.0) || (value <= -0.99))
+                {
+                    auto eval = [game=m_gamepad, this]() -> float
+                    {
+                        float newValue = game->axisLeftX();
+                        cameraZ -= deltaZ * newValue;
+                        update();
+                        return newValue;
+                    };
+                    lockGamepadJoystick(value, eval);
+                }
+            });
+    connect(m_gamepad, &QGamepad::axisLeftYChanged, w, 
+            [&](double value) { 
+                // qDebug() << "Jockstick Left Y" << value; 
+                cameraZ += deltaZ * value;
+                update();
+                if ((value >= 1.0) || (value <= -0.99))
+                {
+                    auto eval = [game=m_gamepad, this]() -> float
+                    {
+                        float newValue = game->axisLeftY();
+                        cameraZ += deltaZ * newValue;
+                        update();
+                        return newValue;
+                    };
+                    lockGamepadJoystick(value, eval);
+                }                
+            });
+    connect(m_gamepad, &QGamepad::axisRightXChanged, w, 
+            [&](double value) {          
+                // qDebug() << "Jockstick Right X" << value;
+                setYRotation(m_yRot + 4 * value);
+                if ((value >= 1.0) || (value <= -0.99))
+                {
+                    auto eval = [game=m_gamepad, this]() -> float
+                    {
+                        float newValue = game->axisRightX();
+                        setYRotation(m_yRot + 4 * newValue);
+                        return newValue;
+                    };
+                    lockGamepadJoystick(value, eval);
+                }
+            });
+    connect(m_gamepad, &QGamepad::axisRightYChanged, w, 
+            [&](double value) { 
+                // qDebug() << "Jocsktick Right Y" << value;
+                setXRotation(m_xRot + 4 * value);
+                if ((value >= 1.0) || (value <= -0.99))
+                {
+                    auto eval = [game=m_gamepad, this]() -> float
+                    {
+                        float newValue = game->axisRightY();
+                        setXRotation(m_xRot + 4 * newValue);
+                        return newValue;
+                    };
+                    lockGamepadJoystick(value, eval);
+                }
+            });
+    connect(m_gamepad, &QGamepad::buttonAChanged, w, [](bool pressed)
+            { 
+                // qDebug() << "Button A" << pressed; 
+            });
+    connect(m_gamepad, &QGamepad::buttonBChanged, w, [](bool pressed)
+            { 
+                // qDebug() << "Button B" << pressed; 
+            });
+    connect(m_gamepad, &QGamepad::buttonCenterChanged, w, [](bool pressed)
+            { 
+                // qDebug() << "Button Center" << pressed;
+            });
+    connect(m_gamepad, &QGamepad::buttonXChanged, w, [](bool pressed)
+            { 
+                // qDebug() << "Button X" << pressed; 
+            });
+    connect(m_gamepad, &QGamepad::buttonYChanged, w, [](bool pressed)
+            { 
+                // qDebug() << "Button Y" << pressed; 
+            });
+    connect(m_gamepad, &QGamepad::buttonL1Changed, w, [](bool pressed)
+            { 
+                // qDebug() << "Button L1" << pressed; 
+            });
+    connect(m_gamepad, &QGamepad::buttonR1Changed, w, [](bool pressed)
+            { 
+                // qDebug() << "Button R1" << pressed;
+            });
+    connect(m_gamepad, &QGamepad::buttonL2Changed, w, [](double value)
+            { 
+                // qDebug() << "Button L2: " << value;
+            });
+    connect(m_gamepad, &QGamepad::buttonR2Changed, w, [](double value)
+            { 
+                // qDebug() << "Button R2: " << value;
+            });
+    connect(m_gamepad, &QGamepad::buttonUpChanged, w,
+            [&](bool pressed) {
+                // qDebug() << "Button Up " << pressed;
+                if (pressed) {
+                    emit moveToNextTime();
+                    if (m_gamepad->buttonR1())
+                    {
+                        auto eval = [game = m_gamepad, this]() -> bool
+                        {
+                            bool button = game->buttonUp();
+                            if (button)
+                            {
+                                emit moveToNextTime();
+                            }
+                            return button;
+                        };
+                        lockGamepadButton(eval);
+                    }
+                }                
+            });
+    connect(m_gamepad, &QGamepad::buttonDownChanged, w,
+            [&](bool pressed) { 
+                // qDebug() << "Button Down" << pressed;
+                if (pressed) {
+                    emit moveToPrevTime();
+                    if (m_gamepad->buttonR1())
+                    {
+                        auto eval = [game = m_gamepad, this]() -> bool
+                        {
+                            bool button = game->buttonDown();
+                            if (button)
+                            {
+                                emit moveToPrevTime();
+                            }
+                            return button;
+                        };
+                        lockGamepadButton(eval);
+                    }
+                }  
+            });
+    connect(m_gamepad, &QGamepad::buttonLeftChanged, w, 
+            [&](bool pressed) { 
+                // qDebug() << "Button Left: " << pressed;
+                if (pressed) {
+                    emit moveToPrevTime();
+                    if (m_gamepad->buttonR1())
+                    {
+                        auto eval = [game = m_gamepad, this]() -> bool
+                        {
+                            bool button = game->buttonLeft();
+                            if (button)
+                            {
+                                emit moveToPrevTime();
+                            }
+                            return button;
+                        };
+                        lockGamepadButton(eval);
+                    }
+                }
+            });
+    connect(m_gamepad, &QGamepad::buttonRightChanged, w, [&](bool pressed)
+            { 
+                // qDebug() << "Button Right: " << pressed;
+                if (pressed) {
+                    emit moveToNextTime();
+                    if (m_gamepad->buttonR1())
+                    {
+                        auto eval = [game = m_gamepad, this]() -> bool
+                        {
+                            bool button = game->buttonRight();
+                            if (button)
+                            {
+                                emit moveToNextTime();
+                            }
+                            return button;
+                        };
+                        lockGamepadButton(eval);
+                    }
+                }
+            });
+    connect(m_gamepad, &QGamepad::buttonSelectChanged, w, [](bool pressed)
+            { 
+                // qDebug() << "Button Select" << pressed;
+            });
+    connect(m_gamepad, &QGamepad::buttonStartChanged, w,
+            [this](bool pressed) {
+                // qDebug() << "Button Start" << pressed;
+                resetPosition();
+            });
+    connect(m_gamepad, &QGamepad::buttonGuideChanged, w, [](bool pressed)
+            { 
+                // qDebug() << "Button Guide" << pressed;
+            });
+}
+
+void GLWidget::lockGamepadJoystick(float value, std::function<float()> evalFunction)
+{
+    int timeLapse = 10;
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [value, timer, evalFunction]() {
+        float newValue = evalFunction();
+        if (newValue != value) {
+            timer->stop();
+        }
+    });
+    timer->start(timeLapse);
+}
+
+void GLWidget::lockGamepadButton(std::function<bool()> evalFunction)
+{
+    int timeLapse = 100;
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [timer, evalFunction]() {
+        if (!evalFunction())
+        {
+            timer->stop();
+        }
+    });
+    timer->start(timeLapse);
 }
 
 void GLWidget::drawAxes()
@@ -442,4 +784,78 @@ int GLWidget::getGridSpacing(Boundaries box)
             return -i;
     }
     return 1;
+}
+
+void GLWidget::drawTracks(int t)
+{
+    vector<vector<PointTrack>> filteredTracks;
+    for (auto& track : tracks) {
+        vector<PointTrack> fTrack (track.size() );
+        auto it = std::copy_if(track.begin(), track.end(), fTrack.begin(),
+                    [&t](PointTrack& pT){ return (pT.id <= t); });
+        fTrack.resize(std::distance(fTrack.begin(), it));
+        if (fTrack.size() > 0) {
+            filteredTracks.push_back(fTrack);
+        }
+    }
+
+    int colorIndex = 0;
+    ColorPalette palette;
+
+    for (auto& track : filteredTracks ) {
+        vector<GLfloat> color = palette.GetColorAt(colorIndex);
+        glColor3f(color.at(0), color.at(1), color.at(2));
+        colorIndex++;
+        glBegin(GL_LINE_STRIP);
+        for (auto& line : track) {
+            glVertex3f(scales.XScale() * line.x,
+                        scales.YScale() * line.y,
+                        scales.ZScale() * line.z);
+        }
+        glEnd();
+    }
+}
+
+void GLWidget::setCurrentSnapshot(int index, BD5::Snapshot& snapshot, vector<string> labels)
+{
+    currentSnapshot.index = index;
+    currentSnapshot.snapshot = snapshot;
+    setDefaultPaletteColors(labels);
+    emit labelsNames(labels);
+}
+
+void GLWidget::setDefaultPaletteColors(vector<string> labels)
+{
+    currentSnapshot.labelsColors.clear();
+    int i = 0;
+    ColorPalette palette;
+    for (auto &label : labels)
+    {
+        currentSnapshot.labelsColors[label] = palette.GetColorAt(i);
+        i++;
+    }
+}
+
+void GLWidget::defineGLColor(string label)
+{
+    // Default color
+    glColor3f(1.0, 1.0, 1.0);
+
+    // Change entity color base on the label color
+    if (!label.empty() && !currentSnapshot.labelsColors.empty())
+    {
+        try
+        {
+            auto color = currentSnapshot.labelsColors.at(label);
+            glColor3fv(color.data());
+        }
+        catch (const std::out_of_range &ofr)
+        {
+            cout << "No in range " << ofr.what() << " " << label << " ";
+        }
+        catch (const std::exception &e)
+        {
+            cout << "Failure " << e.what() << endl;
+        }
+    }
 }

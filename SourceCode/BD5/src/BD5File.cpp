@@ -8,6 +8,30 @@ using namespace std;
 using namespace H5;
 using namespace BD5;
 
+
+void Boundaries::updateBoundaries(const Boundaries& newBoundaries)
+{
+    if (newBoundaries.minX < minX) {
+        minX = newBoundaries.minX;
+    }
+    if (newBoundaries.maxX > maxX) {
+        maxX = newBoundaries.maxX;
+    }
+    if (newBoundaries.minY < minY) {
+        minY = newBoundaries.minY;
+    }
+    if (newBoundaries.maxY > maxY) {
+        maxY = newBoundaries.maxY;
+    }
+    if (newBoundaries.minZ < minZ) {
+        minZ = newBoundaries.minZ;
+    }
+    if (newBoundaries.maxZ > maxZ) {
+        maxZ = newBoundaries.maxZ;
+    }
+}
+
+
 BD5File::BD5File() :
     logger(settings.LOG_FILE)
 {   
@@ -43,6 +67,8 @@ void BD5File::Open(const std::string& f)
         throw;
     }  
 }
+
+
 
 BD5::ScaleUnit BD5File::GetScaleUnit(BD5::DataSet& dataset)
 {
@@ -122,6 +148,119 @@ BD5::ScaleUnit BD5File::GetScaleUnit(BD5::DataSet& dataset)
     }
     return scaleUnit;
 }
+
+std::vector<std::string> BD5File::GetObjNames(BD5::DataSet& dataset) {
+    vector<string> names;
+    for (int i = 0; i < dataset.NumItems(); i++) {
+        names.push_back( dataset.ExtractStringAt("name", i) );
+    }
+    return names;
+}
+
+std::vector<std::vector<PointTrack>> BD5File::WriteTracksGeometry(const std::vector<std::vector<string>>& tracks, const std::vector<PointTrack>& pntTracks) 
+{
+    vector<vector<PointTrack>> vecTracks;
+
+    for(auto& track: tracks) {
+        vector<PointTrack> vecLine;
+        for (auto& lineStr: track) {
+            auto it = std::find_if(pntTracks.begin(), pntTracks.end(),
+                [&lineStr](const PointTrack& row) {
+                    return ( row.objID == lineStr);
+                });
+            if (it != pntTracks.end()) {
+                vecLine.push_back(*it);
+            }
+            else {
+                cout << " Not found " << " lineStr " << lineStr;
+            }
+        }
+        vecTracks.push_back(vecLine);
+    }
+    return vecTracks;
+}
+
+std::vector<PointTrack> BD5File::WriteTrackInfo(int timeId, const std::vector<std::vector<EntityData>>& geometry) 
+{
+    vector<PointTrack> tracksGeom;
+
+    for (auto& obj: geometry) {
+        std::for_each(obj.begin(), obj.end(), 
+                [&](const EntityData& element) {
+            auto it = std::find_if(tracksGeom.begin(), tracksGeom.end(), 
+                [&](const PointTrack& pointTrack) {
+                return (pointTrack.objID == element.ID);
+            });
+            if (it == tracksGeom.end()) {
+                // Polylines write the center of a sID polyline as a special
+                // line with very special ID and Label (this is not a point in 
+                // the line it is the center of the polyline)
+                if ( (element.ID == "XXBoxCenterXX") && (element.Label == "XXLocalBCenterXX") ) {
+                    PointTrack last = tracksGeom[tracksGeom.size()-1];
+                    last.x = element.X();
+                    last.y = element.Y();
+                    last.z = element.Z();
+                    tracksGeom.pop_back();
+                    tracksGeom.push_back(last);
+                } 
+                else {
+                    PointTrack pT = { .x = element.X(), .y = element.Y(), .z = element.Z(),
+                                      .id = timeId, .objID = element.ID, .label = element.Label,
+                                    };
+                    tracksGeom.push_back(pT);
+                }
+            }
+        });
+    }
+
+    return tracksGeom;
+}
+
+
+std::vector<std::pair<string, string>> BD5File::GetRawTrackInfo(BD5::DataSet& dataset) 
+{
+    std::vector<std::pair<string, string>> tracks;
+    for (int i = 0; i < dataset.NumItems(); i++) {
+        string from = dataset.ExtractStringAt("from", i);
+        string to = dataset.ExtractStringAt("to", i);
+        auto track = std::make_pair(from, to);
+        tracks.push_back(track);
+    }
+    return tracks;
+}
+
+std::vector<std::vector<string>> BD5File::MakeTrackPaths(const std::vector<std::pair<string, string>>& tracks)
+{
+    vector<vector<string>> tracksGraph;
+    for (size_t i = 0; i < tracks.size(); i++) {
+        if (i < tracks.size() - 2) {
+            auto tail = slice(tracks, i+1, tracks.size()-1);
+            auto it = std::find_if(tail.begin(), tail.end(), 
+                        [&tracks, &i](const pair<string, string>& tLine) {
+                            return (tLine.first == tracks[i].first);
+                        });
+            if (it != tail.end()) {
+                tracksGraph.push_back({tracks[i].first, tracks[i].second});
+                tracksGraph.push_back({tracks[i].first});  // The second element is fill in after
+                continue;
+            }
+        }
+        auto lineIndex = std::find_if(tracksGraph.rbegin(), tracksGraph.rend(),
+                        [&tracks, &i](const vector<string>& tLine) {
+                            return (tLine[tLine.size()-1] == tracks[i].first);
+                        });
+        if (lineIndex != tracksGraph.rend()) {
+            lineIndex->push_back(tracks[i].second);
+        }
+        else {
+            tracksGraph.push_back({tracks[i].first, tracks[i].second});
+        }
+    }
+    return tracksGraph;
+}
+
+
+
 
 TypeDescriptor BD5File::GetTypeDescriptor(const H5::CompType& compType)
 {
@@ -246,10 +385,14 @@ vector<BD5::Snapshot> BD5File::Read(const std::string& f)
 vector<BD5::Snapshot> BD5File::Read()
 {
     vector<BD5::Snapshot> snapshots;
+    labels.clear();
+
     try
     {
         auto dataGroup = ReadGroup(settings.DATA);
         auto scaleDataset = ReadDataSet(settings.SCALE_UNIT);
+        auto objDef = ReadDataSet(settings.OBJECT_DEF);
+
         scales = GetScaleUnit(scaleDataset);
         if (scales.Type() == SpaceTime_t::ZeroDimension ||
             scales.Type() == SpaceTime_t::ZeroDimensionAndTime ||
@@ -260,6 +403,16 @@ vector<BD5::Snapshot> BD5File::Read()
             ss << __FILE__ << ":" << __func__ << "() " << "This version only consider 2D and 3D dimensions BD5Files";
             logger.log(string(ss.str()), LogType::WARN);
             return snapshots;
+        }
+
+        objNames = GetObjNames(objDef);
+
+        vector<vector<string>> trackLines;
+        auto rootDatasets = dataGroup.Datasets();
+        if (std::find(rootDatasets.begin(), rootDatasets.end(), "trackInfo") != rootDatasets.end()) {
+            auto trackDataset = ReadDataSet(settings.TRACK_INFO);
+            auto rawTrackInfo = GetRawTrackInfo(trackDataset);
+            trackLines = MakeTrackPaths(rawTrackInfo);
         }
 
         // Snapshots capture
@@ -289,17 +442,56 @@ vector<BD5::Snapshot> BD5File::Read()
                 vector<EntityData> currentEntities; // For Line, Face
                 int currentSID = -10000;
                 std::string currentID = "Nothing";
+                boundaries = Boundaries();
+                Boundaries box = Boundaries();
 
+                auto calculateCenter = [&](struct Boundaries theBox) {
+                    std::map<char, float> center;
+                    float x = theBox.minX + (theBox.maxX - theBox.minX) / 2;
+                    float y = theBox.minY + (theBox.maxY - theBox.minY) / 2;
+                    float z = theBox.minZ + (theBox.maxZ - theBox.minZ) / 2;
+                    center.insert({'x', x});
+                    center.insert({'y', y});
+                    center.insert({'z', z});
+                    return center;
+                };
+
+                // Lambda function to write the center of a polylines
+                // as an additional line at the end of the entities vector (sID)
+                auto registerPolylineCenter = [&](struct Boundaries theBox) {
+                    std::map<char, float> center = calculateCenter(theBox);
+                    EntityData polylineCenter = {"XXBoxCenterXX", 
+                                                 "XXLocalBCenterXX", 
+                                                 center };
+                    currentEntities.push_back(polylineCenter);
+                };
+
+                vector<string> currentLabelsVector;
+                string currentLabel;
                 // Entities capture
                 for (int i = 0; i < currentDataset.NumItems(); i++)
                 {
                     string itemID = currentDataset.ExtractStringAt("ID", i);
-                    string itemLabel = "";
+                    string itemLabel;
                     if (currentDataset.ContainsElement("label"))
                         itemLabel = currentDataset.ExtractStringAt("label", i);
                     float cX = currentDataset.ExtractNumberAsAt<float>("x", i);
                     float cY = currentDataset.ExtractNumberAsAt<float>("y", i);
                     float cZ = 0.0f;
+
+                    if ( !itemLabel.empty() ) {
+                        if (itemLabel != currentLabel) {
+                            currentLabelsVector.push_back(itemLabel);
+                            currentLabel = itemLabel;
+                        }
+                        else {
+                            auto found = find(currentLabelsVector.begin(), currentLabelsVector.end(), itemLabel);
+                            if (found == currentLabelsVector.end()) {
+                                currentLabelsVector.push_back(itemLabel);
+                                currentLabel = itemLabel;
+                            }
+                        }
+                    }
 
                     map<char, float> values = {{'x', cX},
                                                {'y', cY}};
@@ -368,6 +560,13 @@ vector<BD5::Snapshot> BD5File::Read()
 
                             if ((sID != currentSID) || (currentID != itemID) )
                             {
+                                if (currentID != itemID) {
+                                    if (i != 0) {
+                                        registerPolylineCenter(box);
+                                    }
+                                    box = Boundaries();
+                                }
+
                                 groupedEntities.push_back(currentEntities);
                                 currentEntities = vector<EntityData>{objData};
                                 currentSID = sID;
@@ -377,6 +576,13 @@ vector<BD5::Snapshot> BD5File::Read()
                                 currentEntities.push_back(objData);
                             }
                             currentID = itemID;
+
+                            if (cX < box.minX) box.minX = cX;
+                            if (cX > box.maxX) box.maxX = cX;
+                            if (cY < box.minY) box.minY = cY;
+                            if (cY > box.maxY) box.maxY = cY;
+                            if (cZ < box.minZ) box.minZ = cZ;
+                            if (cZ > box.maxZ) box.maxZ = cZ;
                         }
                         break;
                         case EntityType::Undefined:
@@ -388,18 +594,11 @@ vector<BD5::Snapshot> BD5File::Read()
                             }
                     }
 
-                    // Get max min of every coordinate
-                    if (i == 0)
-                    {
-                        boundaries.minX = cX;
-                        boundaries.maxX = cX;
-                        boundaries.minY = cY;
-                        boundaries.maxY = cY;
-                        boundaries.minZ = cZ;
-                        boundaries.maxZ = cZ;                    
-                    } 
-                    else 
-                    {
+                    if ( (entityType == EntityType::Line) || 
+                         (entityType == EntityType::Face)) {
+                        boundaries.updateBoundaries(box);
+                    }
+                    else {
                         if (cX < boundaries.minX) boundaries.minX = cX;
                         if (cX > boundaries.maxX) boundaries.maxX = cX;
                         if (cY < boundaries.minY) boundaries.minY = cY;
@@ -407,8 +606,9 @@ vector<BD5::Snapshot> BD5File::Read()
                         if (cZ < boundaries.minZ) boundaries.minZ = cZ;
                         if (cZ > boundaries.maxZ) boundaries.maxZ = cZ;
                     }
-
                 }
+
+                labels.push_back(currentLabelsVector);
 
                 switch (entityType)
                 {
@@ -430,6 +630,9 @@ vector<BD5::Snapshot> BD5File::Read()
                     case EntityType::Face:
                         {
                         // Do not forget to include last element
+                        auto front = currentEntities.front();
+                        registerPolylineCenter(box);
+                        box = Boundaries();
                         groupedEntities.push_back(currentEntities);
 
                         if (settings.BD5FILE_INFO_FLAG)
@@ -451,12 +654,26 @@ vector<BD5::Snapshot> BD5File::Read()
             snapshots.push_back(BD5::Snapshot(objectTime, objects));
         }
 
+        // int i = 0;
+        // for (auto& frame: labels) {
+        //     cout << i << " ";
+        //     for (auto& label: frame) {
+        //         cout << label << " ";
+        //     }
+        //     i++;
+        //     cout << endl;
+        // }
+
         if (settings.BD5FILE_INFO_FLAG)
         {
             std::ostringstream ss;
             ss << __FILE__ << ":" << __func__ << "() " << "Max values scaled x= " << boundaries.maxX * scales.XScale() << " y= " << boundaries.maxY * scales.YScale() << " z= " << boundaries.maxZ * scales.ZScale();
             ss << " Min values scaled x= " << boundaries.minX * scales.XScale() << " y= " << boundaries.minY * scales.YScale() << " z= " << boundaries.minZ * scales.ZScale();
             logger.log(string(ss.str()), LogType::INFO);
+        }
+
+        if (!trackLines.empty()) {
+            tracks = CreateTracks(snapshots, trackLines);
         }
 
         return snapshots;
@@ -487,6 +704,32 @@ vector<BD5::Snapshot> BD5File::Read()
         throw;
     }
 }
+
+
+vector<vector<PointTrack>> BD5File::CreateTracks(const std::vector<BD5::Snapshot>& snapshots, const std::vector<std::vector<std::string>>& tLines)
+{
+    int t = 0;
+    vector<PointTrack> tracks;
+    // int total = 0;
+    for (auto& snapshot: snapshots) {
+        auto objects = snapshot.GetObjects();
+        for (auto& obj: objects ) {
+            int numSubObj = obj.GetNumSubObjects();
+            for (int i = 0; i < numSubObj; i++) {
+                auto subObj = obj.GetSubObject(i);
+                auto currTracks = WriteTrackInfo(t, subObj);
+                // total = total + currTracks.size();
+                tracks.insert(tracks.end(), currTracks.begin(), currTracks.end());
+            }
+        }
+        t++;
+    }
+
+    auto fullTracks = WriteTracksGeometry(tLines, tracks);
+    return fullTracks;
+}
+
+
 
 BD5::DataSet BD5File::ReadDataSet(const string& setPath)
 {
@@ -607,7 +850,32 @@ BD5::ScaleUnit BD5File::Scales() const
     return scales;
 }
 
+vector<string> BD5File::ObjectsNames() const
+{
+    return objNames;
+}
+
 BD5::Boundaries BD5File::GetBoundaries() const
 {
     return boundaries;
+}
+
+bool BD5File::HasTracks() const
+{
+    return !tracks.empty();
+}
+
+vector<vector<PointTrack>> BD5File::GetTracks() const
+{
+    return tracks;
+}
+
+vector<string> BD5File::GetLabelsAtTime(int t) {
+    try {
+        return labels.at(t);
+    }
+    catch(const exception& ex) {
+        cout << ex.what() << " Try to access a t out of range " << t << endl;
+        throw;
+    }
 }

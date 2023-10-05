@@ -11,6 +11,9 @@
 
 #pragma once
 
+#include <QtGamepad/QGamepad>
+#include <QtCore/QList>
+#include <QtCore/QDebug>
 #define GL_SILENCE_DEPRECATION
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -33,6 +36,13 @@ using namespace std;
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QColor)
 
+struct renderSnapshot 
+{
+    int index = 0;
+    BD5::Snapshot snapshot;
+    map<string, vector<float>> labelsColors;
+};
+
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
@@ -51,14 +61,22 @@ public slots:
     void setZRotation(int);
     void setGeometry(QString);
     void resetPosition();
-    void setGeometryColor(QColor);
     void setAxesFlag(bool);
     void setGrid2DFlag(bool);
     void setGrid3DFlag(bool);
+    void setTracksFlag(bool);
+    void setObjectShowFlag(string, bool);
+    void setLabelColor(string, std::vector<float>);
+    void setLabelsOneColor(std::vector<float>);
+    void setDefaultLabelsColors();
 
 signals:
     void readTimeUnitsInfo(int, std::string);
     void snapshotTime(float);
+    void moveToNextTime();
+    void moveToPrevTime();
+    void objectsNames(std::vector<std::string>);
+    void labelsNames(std::vector<std::string>);
 
 protected:
     void initializeGL() override;
@@ -70,32 +88,42 @@ protected:
 
 private:
     void initializeViewer();
+    void initializeGamepad(QWidget*);
+    void lockGamepadJoystick(float, std::function<float()>);
+    void lockGamepadButton(std::function<bool()>);
     void drawAxes();
     void drawPlaneGrid(pair<char, char>, int, float);
     void drawGrid2D();
     void drawGrid3D();
+    int getGridSpacing(BD5::Boundaries);
+    void drawTracks(int);
+    void setCurrentSnapshot(int, BD5::Snapshot&, std::vector<std::string>);
+    void setDefaultPaletteColors(std::vector<std::string>);   
+    void defineGLColor(std::string);
+    QGamepad *m_gamepad = nullptr;
     const int linesPerGrid = 10;
     const int pointSize = 5;
-    int getGridSpacing(BD5::Boundaries);
     bool m_core;
     int m_xRot = 0;
     int m_yRot = 0;
     int m_zRot = 0;
     float cameraZ = 0.0;
     float deltaZ = 0.0;
-    
-    float redColor = 0.8;
-    float greenColor = 0.8;
-    float blueColor = 0.8;
+
     bool showAxes = false;
     bool showGrid2D = false;
     bool showGrid3D = false;
+    bool showTracks = false;
     int gridSpacing = 0;
     BD5::Boundaries boundaries;
     QPoint m_lastPos;
+    BD5File file;
 
     vector<BD5::Snapshot> snapshots;
-    BD5::Snapshot current_snapshot;
+    map<string, bool> objsVisibility;
+    renderSnapshot currentSnapshot;
+    
+    std::vector<std::vector<PointTrack>> tracks;
     BD5::ScaleUnit scales;
     GLUquadricObj *qobj;
 };

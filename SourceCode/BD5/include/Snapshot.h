@@ -43,7 +43,7 @@ public:
      */
     float Time() const;
     /**
-     * @brief   Get the all the objects as a std::vector 
+     * @brief   Get all the objects as a std::vector 
      * 
      * @return const std::vector<BD5::Object>&  Vector of objects
      */

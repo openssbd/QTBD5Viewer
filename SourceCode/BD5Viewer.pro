@@ -7,6 +7,7 @@ DEPENDPATH += src \
 HEADERS       = include/glwidget.h \
                 include/window.h \
                 include/mainwindow.h \
+                include/utils.h \
                 BD5/include/BD5File.h \
                 BD5/include/DataSet.h \
                 BD5/include/Group.h \
@@ -19,6 +20,7 @@ HEADERS       = include/glwidget.h \
 SOURCES       = src/glwidget.cpp \
                 src/window.cpp \
                 src/mainwindow.cpp \
+                src/utils.cpp \
                 src/main.cpp \
                 BD5/src/BD5File.cpp \
                 BD5/src/DataSet.cpp \
@@ -29,7 +31,9 @@ SOURCES       = src/glwidget.cpp \
                 BD5/src/TypeDescriptor.cpp \
                 BD5/src/Logger.cpp
 
-QT += widgets opengl openglwidgets
+CONFIG+=sdk_no_version_check
+
+QT += widgets opengl openglwidgets gamepad core gui
 
 DESTDIR=bin
 OBJECTS_DIR=build
@@ -37,8 +41,10 @@ MOC_DIR=build
 
 # On mac the HDF5 library was compilated from source code, modify for Homebrew or other installation method
 macx: {
-    QMAKE_MAC_SDK = macosx13.3
-    QMAKE_MACOSX_DEPLOYMENT_TARGET=13.3
+#    QMAKE_MAC_SDK = macosx13.3
+#    QMAKE_MACOSX_DEPLOYMENT_TARGET=13.3
+    QMAKE_MAC_SDK = macosx14.0
+    QMAKE_MACOSX_DEPLOYMENT_TARGET=14.0
     INCLUDEPATH += /usr/local/hdf5/include
     INCLUDEPATH += /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers
     LIBS += -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -framework GLUT

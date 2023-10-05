@@ -25,19 +25,15 @@ public:
 
 private slots:
     void onOpenFile();
-    void onResetPosition();
-    void onSelectColor();
-    void onExit();
-    void onChangeAxesFlag(bool);
-    void onChangeGrid2DFlag(bool);
-    void onChangeGrid3DFlag(bool);
+
 signals:
     void fileOpened(QString);
     void resetRequested();
     void colorChanged(QColor);
-    void axesChanged(int);
-    void grid2DChanged(int);
-    void grid3DChanged(int);
+    void axesChanged(bool);
+    void grid2DChanged(bool);
+    void grid3DChanged(bool);
+    void tracksChanged(bool);
 private:
     QStatusBar *statusBar;
     QLabel *statusFileName;

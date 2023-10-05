@@ -14,8 +14,10 @@
 
 QT_BEGIN_NAMESPACE
 class QSlider;
-class QPushButton;
 class QLabel;
+class QVBoxLayout;
+class QCheckBox;
+class QColor;
 QT_END_NAMESPACE
 
 class GLWidget;
@@ -30,20 +32,42 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent*) override;
+    void createObjsGroupBox(std::vector<std::string>);
+    void createLabelsGroupBox(std::vector<std::string>);
+    void removeObjectsNames();
+    void removeLabelNames();
+    void setColorToButtons(QColor);
+    void setDefaultColorsToButtons();
+    void resetOneColorCheck();
+    void removeOneColorButton();
 
 public slots:
     void setNumTimeMarks(int, std::string);
     void setTimeToDisplay(float);
+    void moveToNextTime();
+    void moveToPrevTime();
+    void setObjectsNames(std::vector<std::string>);
+    void setLabelsNames(std::vector<std::string>);
+    void oneColorStateChanged(bool);
+
+signals:
+    void showObjectCheckChanged(std::string, bool);
+    void labelColorChanged(std::string, std::vector<float>);
+    void labelsOneColorChanged(std::vector<float>);
+    void setDefaultLabelsColors();
 
 private:
-    QString timeUnit;
     QSlider *createSlider();
     void setCurrentTime(int);
+    QString timeUnit;
     GLWidget *glWidget;
     QSlider *tSlider;
     QLabel *minTLabel;
     QLabel *maxTLabel;
     QLabel *indexTLabel;
     QLabel *timeLabel;
+    QVBoxLayout *objectsLayout;
+    QVBoxLayout *labelsLayout;
+    QVBoxLayout *oneColorLayout;
     MainWindow *mainWindow;
 };

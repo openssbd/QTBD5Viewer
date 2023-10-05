@@ -122,6 +122,11 @@ const vector< pair<EntityType, vector<vector<EntityData>>>>& Object::GetAllSubOb
     return data;
 }
 
+int Object::GetNumSubObjects() const 
+{
+    return data.size();
+}
+
 const vector<vector<EntityData>>& Object::GetSubObject(int index) const
 {
     try

@@ -13,14 +13,13 @@ REQUIREMENTS.
 The application was tested on PCs with the next operating systems:
 
 * Windows 11 (version 22H2)
-* Mac OSX (Monterey version 12.6)
+* Mac OSX (Sonoma 14.0)
 * Linux (ubuntu distribution version 22.04 LTS)
 
 
 INSTALLER
 For now we offer a windows version as an installer. This include all the 
 required software for its execution.
-
 
 BUILDING FROM SOURCE CODE:
 
@@ -34,8 +33,8 @@ compiler is required to compile the program.
 This is the list of compiler used by operating system platforms:
   
 * Windows: MSVC (version 14.3)
-* Mac OSX: clang (version 14)
-* Linux: gcc (version 11.2.0)
+* Mac OSX: clang (version 15.0)
+* Linux: gcc (version 11.4.0)
 
 On Mac OSX and Linux you require the Make tool for compiling.
 On Windows you require a Visual Studio Community or similar environment (we use version 2022)
@@ -48,15 +47,40 @@ If you require compile the application it is necessary to download the open sour
 
 https://www.qt.io/download
 
-3) HDF5
+3) This version includes support for a XBox controller device for interaction.
+You require to download and install the qtgamepad extension. The Original 
+version for Qt 5 is available at: 
+
+https://github.com/qt/qtgamepad
+
+However, this version does not compile with our version 6 environment. We
+modified slightly the source code in order to compile. You can download 
+together with this project at:
+
+https://github.com/openssbd/QTBD5Viewer
+
+To compile and install follow the next process:
+
+a) Configure the Qt project
+> qmake -o Makefile qtgamepad.pro
+
+b) Compile
+> make
+
+c) install
+> sudo make install
+
+If the process was successful your Qt version 6 includes qtgamepad classes
+and you can receive data from a XBox device
+
+4) HDF5
 
 The HDF group offers serveral versions of its C++ API.
 We selected the version 1.12 and we compiled from source code in 64-bits (x64). 
 In order to localize correctly the HDF5 headers and libraries please modify the path in the 
 file "BD5Viewer.pro" to point to your correct paths.
 
-
-With the three softares previously listed you are able to compile the application:
+With the mentioned four softwares installed you are able to compile the application:
 
 1) Generate compilation environment
  
@@ -80,7 +104,7 @@ a) On the "Solution Explorer" open the properties of the project by clicking wit
 mouse over the name of the project "BD5Viewer". A menu is open select "Properties".
 
 b) On the "BD5Viewer Property Pages" window select "C/C++" and then select "Language". Modify
-the "C++ Language Standard" into "ISO C++17 Standard(/std:c++17)
+the "C++ Language Standard" into "ISO C++20 Standard(/std:c++20)
 
 c) Select "C/C++" and then "General". On the "Additional Include Directories" add the
 path where the HDF5 include file is stored.
@@ -98,12 +122,13 @@ for "libhdf5.lib" and libhd5_cpp.lib could be better to write full path
 
 3) Compile
 
-On Mac OSX and Linux call make tool 
+On Mac OSX and Linux call the make tool
 
 	% make
 
-On Windows inside the Visual Studio select the target "Release" and "x64". And finally Build the
-application selecting from the main menu "Build->Build solution"
+On Windows, inside the Visual Studio select the target "Release" and "x64". And 
+finally Build the application selecting from the main menu 
+"Build->Build solution"
 
 4) Execute
 

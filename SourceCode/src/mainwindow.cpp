@@ -27,34 +27,51 @@ MainWindow::MainWindow()
     QAction *exit = new QAction(menuFile);
     exit->setText(tr("E&xit"));
     menuFile->addAction(exit);
-    connect(exit, &QAction::triggered, this, &MainWindow::onExit);
+    connect(exit, &QAction::triggered, this,
+            []() {
+                QApplication::quit();                
+            });
 
     QAction *resetPos = new QAction(menuView);
     resetPos->setText(tr("&Reset Position"));
     menuView->addAction(resetPos);
-    connect(resetPos, &QAction::triggered, this, &MainWindow::onResetPosition);
-
-    QAction *selectColor = new QAction(menuView);
-    selectColor->setText(tr("Select &Color"));
-    menuView->addAction(selectColor);
-    connect(selectColor, &QAction::triggered, this, &MainWindow::onSelectColor);
+    connect(resetPos, &QAction::triggered, this,
+            [this]() {
+                emit resetRequested();
+            });
 
     setMenuBar(menuBar);
     statusBar = new QStatusBar(this);
     QCheckBox *axes = new QCheckBox("Axes", this);
     QCheckBox *grid2D = new QCheckBox("2D Grid", this);
     QCheckBox *grid3D = new QCheckBox("3D Grid", this);
+    QCheckBox *tracks = new QCheckBox("Tracks", this);
     statusFileName = new QLabel(this);
 
     axes->setCheckState(Qt::Unchecked);
     grid2D->setCheckState(Qt::Unchecked);
+    tracks->setCheckState(Qt::Unchecked);
     statusBar->addPermanentWidget(axes);
     statusBar->addPermanentWidget(grid2D);
     statusBar->addPermanentWidget(grid3D);
+    statusBar->addPermanentWidget(tracks);
     statusBar->insertPermanentWidget(0, statusFileName, 10);   
-    connect(axes, &QCheckBox::clicked, this, &MainWindow::onChangeAxesFlag);
-    connect(grid2D, &QCheckBox::clicked, this, &MainWindow::onChangeGrid2DFlag);
-    connect(grid3D, &QCheckBox::clicked, this, &MainWindow::onChangeGrid3DFlag);
+    connect(axes, &QCheckBox::clicked, this,
+            [this](bool flag) {
+                emit axesChanged(flag);
+            });
+    connect(grid2D, &QCheckBox::clicked, this,
+            [this](bool flag) {
+                emit grid2DChanged(flag);
+            });
+    connect(grid3D, &QCheckBox::clicked, this,
+            [this](bool flag) {
+                emit grid3DChanged(flag);                
+            });
+    connect(tracks, &QCheckBox::clicked, this,
+            [this](bool flag) {
+                emit tracksChanged(flag);                
+            });
     setStatusBar(statusBar);
 
     setCentralWidget(new Window(this));
@@ -75,36 +92,3 @@ void MainWindow::onOpenFile()
     }
 }
 
-void MainWindow::onResetPosition()
-{
-    emit resetRequested();
-}
-
-void MainWindow::onSelectColor()
-{
-    QColor color = QColorDialog::getColor(Qt::lightGray, this, "Geometry color", QColorDialog::DontUseNativeDialog);
-    if (color.isValid())
-    {
-        emit colorChanged(color);
-    }
-}
-
-void MainWindow::onExit()
-{
-    QApplication::quit();
-}
-
-void MainWindow::onChangeAxesFlag(bool flag)
-{
-    emit axesChanged(flag);
-}
-
-void MainWindow::onChangeGrid2DFlag(bool flag)
-{
-    emit grid2DChanged(flag);
-}
-
-void MainWindow::onChangeGrid3DFlag(bool flag)
-{
-    emit grid3DChanged(flag);
-}

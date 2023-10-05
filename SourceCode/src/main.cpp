@@ -3,15 +3,18 @@
 #include <QScreen>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <QtGamepad/QGamepadManager>
+#include <QWindow>
 
 #include "glwidget.h"
 #include "mainwindow.h"
+
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    QCoreApplication::setApplicationName("BD5 Viewer");
+    QCoreApplication::setApplicationName("BD5Viewer");
     QCoreApplication::setOrganizationName("Riken");
     QCoreApplication::setApplicationVersion(QT_VERSION_STR);
     QCommandLineParser parser;
@@ -19,7 +22,18 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
 
+    QCommandLineOption withGamepad("g", QCoreApplication::translate("main", "Connect gamepad"));
+    parser.addOption(withGamepad);
+
     parser.process(app);
+
+    if (parser.isSet(withGamepad)) {
+        do
+        {
+            app.processEvents();
+            cout << "Waiting Gamepad ";
+        } while (QGamepadManager::instance()->connectedGamepads().isEmpty());
+    }
 
     MainWindow mainWindow;
 

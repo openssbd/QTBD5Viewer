@@ -136,6 +136,7 @@ public:
     EntityType EntityTypeAtSubObject(int) const;
     const std::vector<EntityData>& GetEntitiesAtSubObjectNoSID(int) const;
     const std::vector<EntityData>& GetEntitiesAtSubObjectBySID(int, int) const;
+    int GetNumSubObjects() const;
 private:
     // Entities are stored as [first:object_type, second:Entities_list]::[sID (line and poly)]::[list_entities]
     std::vector< std::pair<EntityType, std::vector<std::vector<EntityData>> > > data;
