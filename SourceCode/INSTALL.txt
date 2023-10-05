@@ -132,8 +132,34 @@ finally Build the application selecting from the main menu
 
 4) Execute
 
+For interaction only with keyboard and mouse as follow:
+
 a) On Linux the executable file "BD5Viewer" will be in the "bin" subdirectory
+
 b) On Mac OSX you have the option of execute from "Finder". Inside the bin subdirectory double click
-on the "BD5Viewer.app" Package. Or if you prefer from a terminal move into 
+on the "BD5Viewer.app" Package. Or if you prefer from a terminal move into
 the /bin/BD5Viewer.app/Contents/MacOS directory and execute "BD5Viewer"
+
 c) On Windows the executable file "BD5Viewer.exe" will be in the "bin" subdirectory
+
+To activate the XBox controller, connect your device to the USB port. Some compatible XBox controllers
+has a switch on the back to select XBox mode and D-pad mode. On Linux and Windows select the XBox
+setting with the Mode Key on the front turn-off. On Mac select the D-pad setting with
+the Mode key of the front turn-off. With those settings the jocksticks and buttons will work with
+the correct mapping settings.
+
+To activate the XBox controller run the applications adding the -g option such as:
+
+- On Linux and Mac
+    % ./BD5Viewer -g
+
+- On windows open a command prompt window and change the working directory to the application bin
+directory. Then execute:
+	C:/> BD5Viewer.exe -g
+
+Quick guide of XBox interaction:
+- Left joystick: Zoom in/out
+- Right joystick: Rotation
+- Navigation buttons: Time slider Navigation (one time per click)
+- Navigation buttons with right bumper: Continuous time slider navigation
+- Start button: Reset position
