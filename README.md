@@ -12,8 +12,8 @@ The application interface was developed on QT.
 It was tested on computers with next Operating Systems:
 
 1. Windows 11
-2. Mac OSX Monterey
-3. Linux Ubuntu distro
+2. Mac OSX Sonoma
+3. Linux Ubuntu 22.04 distro
 
 ## Setup
 ---
@@ -25,6 +25,7 @@ Requirements for compilation:
 2. Make
 3. HDF5 library. The version 1.12.2 was used during development. Download available at https://www.hdfgroup.org/downloads/hdf5/
 4. Qt SDK. The version 6.3.1 was used during development. Download available at https://www.qt.io/download
+5. QtGamepad extension to support XBox controller
 
 The source code contains a file titled INSTALL.txt where detailed instruction are described for the
 three mentioned Operating Systems.
