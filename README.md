@@ -31,6 +31,9 @@ three mentioned Operating Systems.
 
 ## Usage
 ---
-From the main application menu select "Open" and search for a file with extension h5 (BD5 file extensions).
+From the main application menu select "Open" and search for a file with extension h5 (BD5 file extensions). <br>
 If the application is able to correctly interpret the file content it will generate a visualization. Then, you can manipulate it with the mouse.
+To use a XBox controller execute from a command line console with the flag -g like this: <br>
+% BD5Viewer -g <br>
+Instructions about using XBox controller are included in the INSTALL.txt file <br>
 If an error is found in the middle of the reading process, you can check the bd5Viewer.log log file for searching an explanation of the error. 
