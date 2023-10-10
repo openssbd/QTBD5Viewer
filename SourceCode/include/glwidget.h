@@ -40,7 +40,8 @@ struct renderSnapshot
 {
     int index = 0;
     BD5::Snapshot snapshot;
-    map<string, vector<float>> labelsColors;
+    // Labels organized as: obj_index, label_key, color_value
+    vector<map<string, vector<float>>> labelsColors;
 };
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
@@ -66,7 +67,7 @@ public slots:
     void setGrid3DFlag(bool);
     void setTracksFlag(bool);
     void setObjectShowFlag(string, bool);
-    void setLabelColor(string, std::vector<float>);
+    void setLabelColor(int, string, std::vector<float>);
     void setLabelsOneColor(std::vector<float>);
     void setDefaultLabelsColors();
 
@@ -76,7 +77,7 @@ signals:
     void moveToNextTime();
     void moveToPrevTime();
     void objectsNames(std::vector<std::string>);
-    void labelsNames(std::vector<std::string>);
+    void labelsNames(std::vector<std::string>, std::vector<std::vector<std::string>>);
 
 protected:
     void initializeGL() override;
@@ -97,9 +98,10 @@ private:
     void drawGrid3D();
     int getGridSpacing(BD5::Boundaries);
     void drawTracks(int);
-    void setCurrentSnapshot(int, BD5::Snapshot&, std::vector<std::string>);
-    void setDefaultPaletteColors(std::vector<std::string>);   
+    void setCurrentSnapshot(int, BD5::Snapshot&, std::vector<std::vector<std::string>>);
+    void setDefaultPaletteColors(std::vector<std::vector<std::string>>);
     void defineGLColor(std::string);
+
     QGamepad *m_gamepad = nullptr;
     const int linesPerGrid = 10;
     const int pointSize = 5;

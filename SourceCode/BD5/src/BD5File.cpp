@@ -172,7 +172,9 @@ std::vector<std::vector<PointTrack>> BD5File::WriteTracksGeometry(const std::vec
                 vecLine.push_back(*it);
             }
             else {
-                cout << " Not found " << " lineStr " << lineStr;
+                std::ostringstream ss;
+                ss << __FILE__ << ":" << __func__ << "() " << "Not found lineStr " << lineStr;
+                logger.log( string(ss.str()), LogType::ERR);
             }
         }
         vecTracks.push_back(vecLine);
@@ -423,6 +425,9 @@ vector<BD5::Snapshot> BD5File::Read()
             auto objectGroup = ReadGroup(currentGroup);
             vector<BD5::Object> objects;
             float objectTime = 0.0;
+
+            vector<vector<string>> currentObjLabels;
+
             // Objects (datasets inside timeId groups) capture
             for (auto& dataset : objectGroup.Datasets())
             {
@@ -608,7 +613,7 @@ vector<BD5::Snapshot> BD5File::Read()
                     }
                 }
 
-                labels.push_back(currentLabelsVector);
+                currentObjLabels.push_back(currentLabelsVector);
 
                 switch (entityType)
                 {
@@ -646,23 +651,14 @@ vector<BD5::Snapshot> BD5File::Read()
                     case EntityType::Undefined:
                         break;
                 }
+
                 BD5::Object currentObject = Object();
                 currentObject.InsertObjectData(entityType, groupedEntities);
                 objects.push_back(currentObject);
             }
-
+            labels.push_back(currentObjLabels);           
             snapshots.push_back(BD5::Snapshot(objectTime, objects));
         }
-
-        // int i = 0;
-        // for (auto& frame: labels) {
-        //     cout << i << " ";
-        //     for (auto& label: frame) {
-        //         cout << label << " ";
-        //     }
-        //     i++;
-        //     cout << endl;
-        // }
 
         if (settings.BD5FILE_INFO_FLAG)
         {
@@ -870,12 +866,14 @@ vector<vector<PointTrack>> BD5File::GetTracks() const
     return tracks;
 }
 
-vector<string> BD5File::GetLabelsAtTime(int t) {
+vector<vector<string>> BD5File::GetLabelsAtTime(int t) {
     try {
         return labels.at(t);
     }
     catch(const exception& ex) {
-        cout << ex.what() << " Try to access a t out of range " << t << endl;
+        std::ostringstream ss;
+        ss << __FILE__ << ":" << __func__ << "() " << ex.what();
+        logger.log( string(ss.str()), LogType::ERR);
         throw;
     }
 }

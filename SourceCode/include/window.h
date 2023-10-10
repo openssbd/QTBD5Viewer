@@ -33,7 +33,7 @@ public:
 protected:
     void keyPressEvent(QKeyEvent*) override;
     void createObjsGroupBox(std::vector<std::string>);
-    void createLabelsGroupBox(std::vector<std::string>);
+    void createLabelsGroupBox(std::vector<std::string>, std::vector<std::vector<std::string>>);
     void removeObjectsNames();
     void removeLabelNames();
     void setColorToButtons(QColor);
@@ -47,18 +47,19 @@ public slots:
     void moveToNextTime();
     void moveToPrevTime();
     void setObjectsNames(std::vector<std::string>);
-    void setLabelsNames(std::vector<std::string>);
+    void setLabelsNames(std::vector<std::string>, std::vector<std::vector<std::string>>);
     void oneColorStateChanged(bool);
 
 signals:
     void showObjectCheckChanged(std::string, bool);
-    void labelColorChanged(std::string, std::vector<float>);
+    void labelColorChanged(int, std::string, std::vector<float>);
     void labelsOneColorChanged(std::vector<float>);
     void setDefaultLabelsColors();
 
 private:
     QSlider *createSlider();
     void setCurrentTime(int);
+    QVBoxLayout* getObjectLayoutAt(int);
     QString timeUnit;
     GLWidget *glWidget;
     QSlider *tSlider;
@@ -66,7 +67,7 @@ private:
     QLabel *maxTLabel;
     QLabel *indexTLabel;
     QLabel *timeLabel;
-    QVBoxLayout *objectsLayout;
+    QVBoxLayout* objsAndLabels;
     QVBoxLayout *labelsLayout;
     QVBoxLayout *oneColorLayout;
     MainWindow *mainWindow;

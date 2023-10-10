@@ -158,7 +158,7 @@ public:
      * @brief   Get the labels corresponding to the time t
      * 
      */
-    std::vector<std::string> GetLabelsAtTime(int);
+    std::vector<std::vector<std::string>> GetLabelsAtTime(int);
 
 private:
     void Open(const std::string& f);
@@ -175,7 +175,8 @@ private:
     std::vector<std::vector<PointTrack>> tracks;
     BD5::ScaleUnit scales;
     std::vector<std::string> objNames;
-    std::vector<std::vector<std::string>> labels;
+    // Labels are ordered as: time_index, obj_index, label_index
+    std::vector<std::vector<std::vector<std::string>>> labels;
     H5::H5File file;
     BD5::Boundaries boundaries;
     Settings settings;

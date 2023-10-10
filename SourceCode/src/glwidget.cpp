@@ -59,8 +59,10 @@ void GLWidget::setTimeToVisualize(int time)
     {
         emit snapshotTime( snapshots[time].Time() * scales.TScale() );
         auto names = file.GetLabelsAtTime(time);
-        // for (auto &name: names) {
-        //     cout << time << " " << name << " ";
+        // for (auto &obj: names) {
+        //     for (auto &name: obj) {
+        //         cout << "TimeToVisualize " << time << " " << name << " ";
+        //     }
         // }
         // cout << endl;
         setCurrentSnapshot(time, snapshots[time], names);
@@ -138,11 +140,21 @@ void GLWidget::setGeometry(QString filePath)
         objsVisibility[obj] = true;
     }
 
+    emit objectsNames(file.ObjectsNames());
+
     auto labelNames = file.GetLabelsAtTime(0);
+    // cout << "Labels on glWidget" << endl;
+    // for (auto& obj: labelNames) {
+    //     cout << "Obj ";
+    //     for (auto& name: obj) {
+    //         cout << name << " ";
+    //     }
+    //     cout << endl;
+    // }
+
     setCurrentSnapshot(0, snapshots.front(), labelNames);
 
     emit readTimeUnitsInfo((snapshots.size() - 1), scales.TUnit());
-    emit objectsNames(file.ObjectsNames());
 
     update();
 }
@@ -180,28 +192,30 @@ void GLWidget::setTracksFlag(bool flag)
 void GLWidget::setObjectShowFlag(string key, bool flag) {
     try {
         objsVisibility[key] = flag;
-        // cout << "Check " << key << " " << flag << " " << objsVisibility.size() << endl;
         update(); 
     }
     catch (const std::exception& e) {
-        cout << e.what() << endl;
+        cout << "GLWidget. Object key not found. " << e.what() << endl;
     }
 }
 
-void GLWidget::setLabelColor(string key, vector<float> color) {
+void GLWidget::setLabelColor(int objIndex, string key, vector<float> color) {
     try {
-        currentSnapshot.labelsColors[key] = color;
+        currentSnapshot.labelsColors[objIndex][key] = color;
         update();
     }
     catch (const std::exception& e) {
-        cout << e.what() << endl;
+        cout << "GLWidget. Color object key not found. " << e.what() << endl;
     }
 }
 
 void GLWidget::setLabelsOneColor(vector<float> color) {
-    for (auto& [key, val]: currentSnapshot.labelsColors)
+    for (auto& obj: currentSnapshot.labelsColors)
     {
-        val = color;
+        for (auto& [key, val]: obj)
+        {
+            val = color;
+        }
     }
     update();
 }
@@ -527,42 +541,42 @@ void GLWidget::initializeGamepad(QWidget* w)
                     lockGamepadJoystick(value, eval);
                 }
             });
-    connect(m_gamepad, &QGamepad::buttonAChanged, w, [](bool pressed)
-            { 
-                // qDebug() << "Button A" << pressed; 
-            });
-    connect(m_gamepad, &QGamepad::buttonBChanged, w, [](bool pressed)
-            { 
-                // qDebug() << "Button B" << pressed; 
-            });
-    connect(m_gamepad, &QGamepad::buttonCenterChanged, w, [](bool pressed)
-            { 
-                // qDebug() << "Button Center" << pressed;
-            });
-    connect(m_gamepad, &QGamepad::buttonXChanged, w, [](bool pressed)
-            { 
-                // qDebug() << "Button X" << pressed; 
-            });
-    connect(m_gamepad, &QGamepad::buttonYChanged, w, [](bool pressed)
-            { 
-                // qDebug() << "Button Y" << pressed; 
-            });
-    connect(m_gamepad, &QGamepad::buttonL1Changed, w, [](bool pressed)
-            { 
-                // qDebug() << "Button L1" << pressed; 
-            });
-    connect(m_gamepad, &QGamepad::buttonR1Changed, w, [](bool pressed)
-            { 
-                // qDebug() << "Button R1" << pressed;
-            });
-    connect(m_gamepad, &QGamepad::buttonL2Changed, w, [](double value)
-            { 
-                // qDebug() << "Button L2: " << value;
-            });
-    connect(m_gamepad, &QGamepad::buttonR2Changed, w, [](double value)
-            { 
-                // qDebug() << "Button R2: " << value;
-            });
+    // connect(m_gamepad, &QGamepad::buttonAChanged, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button A" << pressed; 
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonBChanged, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button B" << pressed; 
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonCenterChanged, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button Center" << pressed;
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonXChanged, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button X" << pressed; 
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonYChanged, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button Y" << pressed; 
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonL1Changed, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button L1" << pressed; 
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonR1Changed, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button R1" << pressed;
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonL2Changed, w, [](double value)
+    //         { 
+    //             qDebug() << "Button L2: " << value;
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonR2Changed, w, [](double value)
+    //         { 
+    //             qDebug() << "Button R2: " << value;
+    //         });
     connect(m_gamepad, &QGamepad::buttonUpChanged, w,
             [&](bool pressed) {
                 // qDebug() << "Button Up " << pressed;
@@ -643,19 +657,19 @@ void GLWidget::initializeGamepad(QWidget* w)
                     }
                 }
             });
-    connect(m_gamepad, &QGamepad::buttonSelectChanged, w, [](bool pressed)
-            { 
-                // qDebug() << "Button Select" << pressed;
-            });
-    connect(m_gamepad, &QGamepad::buttonStartChanged, w,
-            [this](bool pressed) {
-                // qDebug() << "Button Start" << pressed;
-                resetPosition();
-            });
-    connect(m_gamepad, &QGamepad::buttonGuideChanged, w, [](bool pressed)
-            { 
-                // qDebug() << "Button Guide" << pressed;
-            });
+    // connect(m_gamepad, &QGamepad::buttonSelectChanged, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button Select" << pressed;
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonStartChanged, w,
+    //         [this](bool pressed) {
+    //             qDebug() << "Button Start" << pressed;
+    //             resetPosition();
+    //         });
+    // connect(m_gamepad, &QGamepad::buttonGuideChanged, w, [](bool pressed)
+    //         { 
+    //             qDebug() << "Button Guide" << pressed;
+    //         });
 }
 
 void GLWidget::lockGamepadJoystick(float value, std::function<float()> evalFunction)
@@ -816,23 +830,28 @@ void GLWidget::drawTracks(int t)
     }
 }
 
-void GLWidget::setCurrentSnapshot(int index, BD5::Snapshot& snapshot, vector<string> labels)
+void GLWidget::setCurrentSnapshot(int index, BD5::Snapshot& snapshot, vector<vector<string>> labels)
 {
     currentSnapshot.index = index;
     currentSnapshot.snapshot = snapshot;
     setDefaultPaletteColors(labels);
-    emit labelsNames(labels);
+    emit labelsNames(file.ObjectsNames(), labels);
 }
 
-void GLWidget::setDefaultPaletteColors(vector<string> labels)
+void GLWidget::setDefaultPaletteColors(vector<vector<string>> objLabels)
 {
     currentSnapshot.labelsColors.clear();
     int i = 0;
     ColorPalette palette;
-    for (auto &label : labels)
+    for (auto &obj: objLabels)
     {
-        currentSnapshot.labelsColors[label] = palette.GetColorAt(i);
-        i++;
+        map<string, vector<float>> objLabelsColors;
+        for (auto &label : obj)
+        {
+            objLabelsColors[label] = palette.GetColorAt(i);
+            i++;
+        }
+        currentSnapshot.labelsColors.push_back(objLabelsColors);
     }
 }
 
@@ -846,8 +865,15 @@ void GLWidget::defineGLColor(string label)
     {
         try
         {
-            auto color = currentSnapshot.labelsColors.at(label);
-            glColor3fv(color.data());
+            for (auto &obj: currentSnapshot.labelsColors)
+            {
+                auto it = obj.find(label);
+                if (it != obj.end())
+                {
+                    auto color = it->second;
+                    glColor3fv(color.data());
+                }
+            }
         }
         catch (const std::out_of_range &ofr)
         {
@@ -855,7 +881,7 @@ void GLWidget::defineGLColor(string label)
         }
         catch (const std::exception &e)
         {
-            cout << "Failure " << e.what() << endl;
+            cout << "On defineGLColor: " << e.what() << endl;
         }
     }
 }

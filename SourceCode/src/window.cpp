@@ -29,7 +29,7 @@ Window::Window(MainWindow *mw)
     maxTLabel = new QLabel;
     indexTLabel = new QLabel;
     timeLabel = new QLabel;
-    QVBoxLayout* objsAndLabels(new QVBoxLayout);
+    objsAndLabels = new QVBoxLayout;
 
     minTLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
     maxTLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed));
@@ -59,17 +59,6 @@ Window::Window(MainWindow *mw)
     connect(glWidget, &GLWidget::objectsNames, this, &Window::setObjectsNames);
     connect(glWidget, &GLWidget::labelsNames, this, &Window::setLabelsNames);
 
-    QString objectsName = QString("Ob&jects");
-    QGroupBox* objectsGroupBox(new QGroupBox(objectsName));
-    objectsGroupBox->setObjectName(objectsName);
-    objectsGroupBox->setFlat(true);
-    objectsLayout = new QVBoxLayout;
-    objectsLayout->setSizeConstraint(QLayout::SetMaximumSize);
-    objectsLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    objectsGroupBox->setLayout(objectsLayout);
-    // objsAndLabels->setAlignment(objectsGroupBox, Qt::AlignTop);
-    objsAndLabels->addWidget(objectsGroupBox);
-
     QString oneColorName = QString("Labels &colors");
     QGroupBox *oneColorGroupBox(new QGroupBox(oneColorName));
     oneColorGroupBox->setFlat(true);
@@ -77,11 +66,11 @@ Window::Window(MainWindow *mw)
     oneColorGroupBox->setLayout(oneColorLayout);
     objsAndLabels->addWidget(oneColorGroupBox);
 
-    QString labelsName = QString("La&bels");
+    QString labelsName = QString("Ob&jects-Labels");
     QGroupBox *labelsGroupBox(new QGroupBox(labelsName));
     labelsGroupBox->setFlat(true);
     labelsGroupBox->setObjectName(labelsName);
-    labelsGroupBox->setMinimumWidth(120);  // TODO define a flexible size
+    labelsGroupBox->setMinimumWidth(150);  // TODO define a flexible size
 
     labelsLayout = new QVBoxLayout(labelsGroupBox);
     labelsLayout->setObjectName("VerticalBox");
@@ -139,65 +128,101 @@ void Window::keyPressEvent(QKeyEvent *e)
 void Window::createObjsGroupBox(vector<string> names) 
 {
     for (auto& name: names) {
-        QString title = QString::fromStdString(name);
-        QCheckBox *nameCheck = new QCheckBox(title, this);
-        nameCheck->setObjectName(title);
-        nameCheck->setChecked(true);
-        objectsLayout->addWidget(nameCheck);
-        connect(nameCheck, &QCheckBox::clicked, this, [objName = name, this](bool flag)
+        QGroupBox *objectsGroup = new QGroupBox(QString(name.data()));
+        objectsGroup->setCheckable(true);
+        connect(objectsGroup, &QGroupBox::clicked, this, [name, this](bool flag)
         {
-            emit showObjectCheckChanged(objName, flag);
+            emit showObjectCheckChanged(name, flag);
         });
+        QVBoxLayout *objLayout = new QVBoxLayout();
+        objectsGroup->setLayout(objLayout);
+        labelsLayout->addWidget(objectsGroup);
     }
 }
 
-void Window::createLabelsGroupBox(vector<string> names) 
+QVBoxLayout* Window::getObjectLayoutAt(int index)
 {
-    int i = 0;
-    for (auto& name : names) {
-        QHBoxLayout* hbox = new QHBoxLayout;
-        hbox->setObjectName("HorizontalBox");
-        hbox->setSizeConstraint(QLayout::SetMinimumSize);
-        QPushButton* labelColor = new QPushButton;
-        labelColor->setObjectName(tr("colorButton"));
-        // labelColor->setMaximumWidth(20);
-        // labelColor->setMinimumWidth(20);
-        labelColor->setMaximumSize( QSize(20,20) );
-        QColor bColor;
-        ColorPalette palette;
-        auto utilColor = palette.GetColorAt(i);
-        bColor.setRgbF(utilColor[0], utilColor[1], utilColor[2]);
-        i++;
-        QString style = "QPushButton { background: %1; }";
-        labelColor->setStyleSheet( style.arg(bColor.name()));
-        hbox->addWidget(labelColor);
-        connect(labelColor, &QPushButton::clicked, this, [labelName = name, button = labelColor, this]()
+    if (index >= labelsLayout->count())
+    {
+        cout << "Out of range. The object group box does not exists " << index << endl;
+        return nullptr;
+    }
+
+    try {
+        QLayoutItem* qItem = labelsLayout->itemAt(index);
+        QWidget* asWidget = qItem->widget();
+        QGroupBox* groupBox = qobject_cast<QGroupBox*>(asWidget);
+        QLayout* asLayout = groupBox->layout();
+        QVBoxLayout* objLayout = qobject_cast<QVBoxLayout*>(asLayout);
+        return objLayout;
+    }
+    catch(exception& ex) {
+        cout << "Object layout problem: " << ex.what() << endl;
+        throw;
+    }
+}
+
+
+void Window::createLabelsGroupBox(vector<string> objects, vector<vector<string>> names) 
+{
+    int colorIndex = 0;
+    for (size_t objIndex = 0; objIndex < objects.size(); objIndex++)
+    {
+        QVBoxLayout* objLayout = getObjectLayoutAt(objIndex);
+        if (objLayout == nullptr) {
+            cout << "No groupBox defined for " << objects[objIndex] << endl;
+            return;
+        }
+
+        for (size_t nameIndex = 0; nameIndex < names[objIndex].size(); nameIndex++)
         {
+            auto &name = names[objIndex][nameIndex];
+            QHBoxLayout *hbox = new QHBoxLayout;
+            hbox->setSizeConstraint(QLayout::SetMinimumSize);
+            QPushButton *labelColor = new QPushButton;
+            labelColor->setObjectName(tr("colorButton"));
+            // labelColor->setMaximumWidth(20);
+            // labelColor->setMinimumWidth(20);
+            labelColor->setMaximumSize(QSize(20, 20));
+            QColor bColor;
+            ColorPalette palette;
+            auto utilColor = palette.GetColorAt(colorIndex);
+            bColor.setRgbF(utilColor[0], utilColor[1], utilColor[2]);
+            colorIndex++;
+            QString style = "QPushButton { background: %1; }";
+            labelColor->setStyleSheet(style.arg(bColor.name()));
+            hbox->addWidget(labelColor);
+            connect(labelColor, &QPushButton::clicked, this, [name, labelColor, objIndex, this]()
+                    {
             QColor qColor = QColorDialog::getColor(Qt::lightGray, this, "Label entity color", QColorDialog::DontUseNativeDialog);
             if (qColor.isValid())
             {
                 vector<float> color { qColor.redF(), qColor.greenF(), qColor.blueF() };
-                emit labelColorChanged(labelName, color);
+                emit labelColorChanged(objIndex, name, color);
                 this->resetOneColorCheck();
                 QString selectedColor = qColor.name();
                 QString style = "QPushButton { background: %1; }";
-                button->setStyleSheet( style.arg(selectedColor) );
-            }
-        });
-        QLabel* labelName = new QLabel( QString::fromStdString(name), this);
-        hbox->addWidget(labelName);
-        labelsLayout->addLayout(hbox);
+                labelColor->setStyleSheet( style.arg(selectedColor) );
+            } });
+            QLabel *labelName = new QLabel(QString::fromStdString(name), this);
+            hbox->addWidget(labelName);
+            objLayout->addLayout(hbox);
+        }
     }
 }
 
 void Window::removeObjectsNames() 
 {
+    removeLabelNames();
+  
     QLayoutItem *child;
-    while ((child = objectsLayout->takeAt(0)) != nullptr)
+    while ((child = labelsLayout->takeAt(0)) != nullptr)
     {
         delete child->widget();
+        delete child->layout();
         delete child;
     }
+
 }
 
 void Window::removeLabelNames() 
@@ -205,19 +230,25 @@ void Window::removeLabelNames()
     QLayoutItem *child;
     QLayoutItem *innerChild;
     QLayout *hLayout;
-    while ((child = labelsLayout->takeAt(0)) != nullptr)
-    {
-        hLayout = child->layout();
-        if (hLayout == nullptr)
-            cout << "Null layout";
-        while ((innerChild = hLayout->takeAt(0)) != nullptr)
-        {
-            delete innerChild->widget();
-            delete innerChild;
-        }
 
-        delete child->widget();
-        delete child;
+    for (int i = 0; i < labelsLayout->count(); i++) 
+    {
+        QVBoxLayout* objLayout = getObjectLayoutAt(i);
+
+        while ((child = objLayout->takeAt(0)) != nullptr)
+        {
+            hLayout = child->layout();
+            if (hLayout == nullptr)
+                cout << "Null layout";
+            while ((innerChild = hLayout->takeAt(0)) != nullptr)
+            {
+                delete innerChild->widget();
+                delete innerChild;
+            }
+
+            delete child->widget();
+            delete child;
+        }
     }
 
     // Common color for labels
@@ -229,22 +260,39 @@ void Window::removeLabelNames()
     }    
 }
 
-
 void Window::setColorToButtons(QColor color)
 {
     QString selectedColor = color.name();
     QString style = "QPushButton { background: %1; }";
-    for (qsizetype i = 0; i < labelsLayout->children().size(); i++)
+
+    for (int i = 0; i < labelsLayout->count(); i++)
     {
         try {
-            QObject* child = labelsLayout->children()[i];
-            QHBoxLayout *hbox = qobject_cast<QHBoxLayout *>(child);
-            if (hbox == nullptr) {
-                cout << "Color Horizontal layout not found " << endl;
+            QLayoutItem* child = labelsLayout->itemAt(i);
+            QWidget* objWidget = child->widget();
+            QGroupBox* objBox = qobject_cast<QGroupBox *>(objWidget);
+            if (objBox == nullptr)
+            {
+                cout << "GroupBox not found " << endl;
             }
-            QLayoutItem* item = hbox->itemAt(0);
-            QPushButton* buttonWidget = qobject_cast<QPushButton *>(item->widget());
-            buttonWidget->setStyleSheet( style.arg(selectedColor) );            
+            QVBoxLayout *objLayout = qobject_cast<QVBoxLayout *>(objBox->layout());
+            if (objLayout == nullptr)
+            {
+                cout << "GroupBox layout not found " << endl;
+            }
+
+            for (int labelIndex = 0; labelIndex < objLayout->count(); labelIndex++)
+            {
+                QLayoutItem* objLabelsLayout = objLayout->itemAt(labelIndex);
+                QHBoxLayout* hbox = qobject_cast<QHBoxLayout *>(objLabelsLayout->layout());
+                if (hbox == nullptr)
+                {
+                    cout << "Color Horizontal layout not found " << endl;
+                }
+                QLayoutItem *item = hbox->itemAt(0);
+                QPushButton *buttonWidget = qobject_cast<QPushButton *>(item->widget());
+                buttonWidget->setStyleSheet(style.arg(selectedColor));
+            }
         }
         catch (std::exception& ex) {
             cout << "qt interface " << ex.what() << endl;
@@ -255,26 +303,39 @@ void Window::setColorToButtons(QColor color)
 void Window::setDefaultColorsToButtons()
 {
     QString style = "QPushButton { background: %1; }";
-    for (qsizetype i = 0; i < labelsLayout->children().size(); i++)
+    int colorIndex = 0;
+    for (int i = 0; i < labelsLayout->count(); i++)
     {
-        try {
+        QLayoutItem* child = labelsLayout->itemAt(i);
+        QWidget* objWidget = child->widget();
+        QGroupBox* objBox = qobject_cast<QGroupBox *>(objWidget);
+        if (objBox == nullptr)
+        {
+            cout << "DefaultColors. GroupBox not found " << endl;
+        }
+        QVBoxLayout *objLayout = qobject_cast<QVBoxLayout *>(objBox->layout());
+        if (objLayout == nullptr)
+        {
+            cout << "DefaultColors. Group layout not found " << endl;
+        }
+        for (int labelIndex = 0; labelIndex < objLayout->count(); labelIndex++)
+        {
             QColor bColor;
             ColorPalette palette;
-            auto utilColor = palette.GetColorAt(i);
+            auto utilColor = palette.GetColorAt(colorIndex);
+            colorIndex++;
             bColor.setRgbF(utilColor[0], utilColor[1], utilColor[2]);
             QString selectedColor = bColor.name();
 
-            QObject* child = labelsLayout->children()[i];
-            QHBoxLayout *hbox = qobject_cast<QHBoxLayout *>(child);
-            if (hbox == nullptr) {
-                cout << "Color Horizontal layout not found " << endl;
+            QLayoutItem* objLabelsLayout = objLayout->itemAt(labelIndex);
+            QHBoxLayout *hbox = qobject_cast<QHBoxLayout *>(objLabelsLayout->layout());
+            if (hbox == nullptr)
+            {
+                cout << "DefaultColors. Color Horizontal layout not found " << endl;
             }
-            QLayoutItem* item = hbox->itemAt(0);
-            QPushButton* buttonWidget = qobject_cast<QPushButton *>(item->widget());
-            buttonWidget->setStyleSheet( style.arg(selectedColor) );            
-        }
-        catch (std::exception& ex) {
-            cout << "qt interface " << ex.what() << endl;
+            QLayoutItem *item = hbox->itemAt(0);
+            QPushButton *buttonWidget = qobject_cast<QPushButton *>(item->widget());
+            buttonWidget->setStyleSheet(style.arg(selectedColor));
         }
     }
 }
@@ -351,13 +412,13 @@ void Window::setObjectsNames(vector<string> names)
     createObjsGroupBox(names);
 }
 
-void Window::setLabelsNames(vector<string> names) 
+void Window::setLabelsNames(vector<string> objects, vector<vector<string>> names) 
 {
     removeLabelNames();
     if (names.empty())
         return;
 
-    createLabelsGroupBox(names);
+    createLabelsGroupBox(objects, names);
 
     // Common color for labels
     QCheckBox *checkOneColor = new QCheckBox(tr("One color?"));
@@ -403,7 +464,7 @@ void Window::oneColorStateChanged(bool checked)
     {
         removeOneColorButton();
         emit setDefaultLabelsColors();
-        setDefaultColorsToButtons();                
+        setDefaultColorsToButtons();
     }
 }
 
