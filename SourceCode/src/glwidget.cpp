@@ -467,7 +467,7 @@ void GLWidget::initializeViewer()
     else
     {
         cameraZ = (boundaries.maxZ - boundaries.minZ) * 4.0;
-        deltaZ = (boundaries.maxZ - boundaries.minZ) / 100.0;
+        deltaZ = (boundaries.maxZ - boundaries.minZ) / 1000.0;
     }
 }
 
