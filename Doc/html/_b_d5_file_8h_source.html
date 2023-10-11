@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>QTBD5Viewer: BD5/include/BD5File.h Source File</title>
+<title>QtBD5Viewer: C:/Users/Miranda Miguel/Documents/Programs/C++/HDF5/qtbd5viewer/BD5/include/BD5File.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,9 +21,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">QTBD5Viewer
+   <div id="projectname">QtBD5Viewer
    </div>
-   <div id="projectbrief">A simple visualizer for BD5 files</div>
+   <div id="projectbrief">SSBD visualizer based on HDF library to visualize BD5-format files</div>
   </td>
  </tr>
  </tbody>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_c0330699e998cfbd13f692af397a55d9.html">BD5</a></li><li class="navelem"><a class="el" href="dir_04464707edfc2b5170e9ac8b7a8af022.html">include</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d522931ffa1371640980b621734a4381.html">Users</a></li><li class="navelem"><a class="el" href="dir_2dc13eeb48bf9fd3c4699415a3c57b63.html">Miranda Miguel</a></li><li class="navelem"><a class="el" href="dir_9df1f28d021ef80bc07d23a97604761e.html">Documents</a></li><li class="navelem"><a class="el" href="dir_9476ed0bb0b99f14369c1ab24451231b.html">Programs</a></li><li class="navelem"><a class="el" href="dir_fb39b9e1b71d88f4e99262834c09c447.html">C++</a></li><li class="navelem"><a class="el" href="dir_c79a904eb7b03947f8c9b3be2cd23866.html">HDF5</a></li><li class="navelem"><a class="el" href="dir_3f4beba661a2ab05494fc8c35d49808e.html">qtbd5viewer</a></li><li class="navelem"><a class="el" href="dir_8d71c4bd8e77a5029a3e9d14af4718f8.html">BD5</a></li><li class="navelem"><a class="el" href="dir_fd965826a24a015c6b859a287d29e7cb.html">include</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -83,61 +83,93 @@ $(function() {
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;H5Cpp.h&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="_scale_unit_8h.html">ScaleUnit.h</a>&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="_data_set_8h.html">DataSet.h</a>&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="_group_8h.html">Group.h</a>&quot;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="_object_8h.html">Object.h</a>&quot;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="_snapshot_8h.html">Snapshot.h</a>&quot;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="_logger_8h.html">Logger.h</a>&quot;</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span>BD5{</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="struct_b_d5_1_1_settings.html">   31</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_b_d5_1_1_settings.html">Settings</a> {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::string DATA = <span class="stringliteral">&quot;/data&quot;</span>;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::string SCALE_UNIT = <span class="stringliteral">&quot;/data/scaleUnit&quot;</span>;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::string OBJECT_DEF = <span class="stringliteral">&quot;/data/objectDef&quot;</span>;;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::string LOG_FILE  = <span class="stringliteral">&quot;bd5Viewer.log&quot;</span>;;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">bool</span> BD5FILE_INFO_FLAG = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="struct_b_d5_1_1_boundaries.html">   43</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_b_d5_1_1_boundaries.html">Boundaries</a> {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">float</span> maxX = 0.0;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">float</span> maxY = 0.0;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">float</span> maxZ = 0.0;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">float</span> minX = 0.0;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">float</span> minY = 0.0;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">float</span> minZ = 0.0;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>};</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="class_b_d5_1_1_b_d5_file.html">   56</a></span><span class="keyword">class </span><a class="code hl_class" href="class_b_d5_1_1_b_d5_file.html">BD5File</a></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>{</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a25b884474309526ecf3cbc3196bcf3c8">BD5File</a>();</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a25b884474309526ecf3cbc3196bcf3c8">BD5File</a>(<span class="keyword">const</span> std::string&amp; f);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a25b884474309526ecf3cbc3196bcf3c8">BD5File</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_b_d5_1_1_b_d5_file.html">BD5File</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_class" href="class_b_d5_1_1_b_d5_file.html">BD5File</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_b_d5_1_1_b_d5_file.html">BD5File</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::vector&lt;BD5::Snapshot&gt; <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a89fbb8f2804dc8438f4ba0f3f3b067cb">Read</a>(<span class="keyword">const</span> std::string&amp; f);</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    std::vector&lt;BD5::Snapshot&gt; <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a89fbb8f2804dc8438f4ba0f3f3b067cb">Read</a>();</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_class" href="class_b_d5_1_1_data_set.html">BD5::DataSet</a> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a67470e1e5d1e16361b609f6adbd40ee8">ReadDataSet</a>(<span class="keyword">const</span> std::string&amp; setPath);</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_class" href="class_b_d5_1_1_group.html">BD5::Group</a> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a50c7d972c015efb3b79e6da9f7841ba9">ReadGroup</a>(<span class="keyword">const</span> std::string&amp; groupPath);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::string <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#adb546d05f225a490b4caf7a0c770bf28">Name</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="class_b_d5_1_1_scale_unit.html">BD5::ScaleUnit</a> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a359d70b673168aa546de0ddbeab50018">Scales</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_struct" href="struct_b_d5_1_1_boundaries.html">Boundaries</a> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a42064e7b0686100b53dc8e8eac9d6f1d">GetBoundaries</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> Open(<span class="keyword">const</span> std::string&amp; f);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_class" href="class_b_d5_1_1_scale_unit.html">BD5::ScaleUnit</a> GetScaleUnit(<a class="code hl_class" href="class_b_d5_1_1_data_set.html">BD5::DataSet</a>&amp;);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_class" href="class_b_d5_1_1_type_descriptor.html">TypeDescriptor</a> GetTypeDescriptor(<span class="keyword">const</span> H5::CompType&amp;);</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <a class="code hl_enumeration" href="_type_descriptor_8h.html#af644a33b500c7efd647ab9cb37d08c30">ElementType</a> GetElementType(<span class="keyword">const</span> H5::CompType&amp;, <span class="keywordtype">int</span>);</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <a class="code hl_class" href="class_b_d5_1_1_scale_unit.html">BD5::ScaleUnit</a> scales;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    H5::H5File file;</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_struct" href="struct_b_d5_1_1_boundaries.html">BD5::Boundaries</a> boundaries;</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <a class="code hl_struct" href="struct_b_d5_1_1_settings.html">Settings</a> settings;</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <a class="code hl_class" href="class_logger.html">Logger</a> logger;    </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>};</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;H5Cpp.h&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="_scale_unit_8h.html">ScaleUnit.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="_data_set_8h.html">DataSet.h</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="_group_8h.html">Group.h</a>&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="_object_8h.html">Object.h</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="_snapshot_8h.html">Snapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;<a class="code" href="_logger_8h.html">Logger.h</a>&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span>BD5{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="struct_b_d5_1_1_settings.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_b_d5_1_1_settings.html">Settings</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::string DATA = <span class="stringliteral">&quot;/data&quot;</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::string SCALE_UNIT = <span class="stringliteral">&quot;/data/scaleUnit&quot;</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::string OBJECT_DEF = <span class="stringliteral">&quot;/data/objectDef&quot;</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    std::string TRACK_INFO = <span class="stringliteral">&quot;/data/trackInfo&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    std::string LOG_FILE  = <span class="stringliteral">&quot;bd5Viewer.log&quot;</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">bool</span> BD5FILE_INFO_FLAG = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="struct_b_d5_1_1_boundaries.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_b_d5_1_1_boundaries.html">Boundaries</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">float</span> maxX = std::numeric_limits&lt;float&gt;::min();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">float</span> maxY = std::numeric_limits&lt;float&gt;::min();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">float</span> maxZ = std::numeric_limits&lt;float&gt;::min();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">float</span> minX = std::numeric_limits&lt;float&gt;::max();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">float</span> minY = std::numeric_limits&lt;float&gt;::max();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">float</span> minZ = std::numeric_limits&lt;float&gt;::max();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> updateBoundaries(<span class="keyword">const</span> <a class="code hl_struct" href="struct_b_d5_1_1_boundaries.html">Boundaries</a>&amp;);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="struct_b_d5_1_1_point_track.html">   59</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_b_d5_1_1_point_track.html">PointTrack</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">float</span> x = 0.0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">float</span> y = 0.0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">float</span> z = 0.0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">int</span> <span class="keywordtype">id</span> = 0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::string objID = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::string label = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> print(<span class="keywordtype">void</span>) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; id &quot;</span> &lt;&lt; <span class="keywordtype">id</span> &lt;&lt; <span class="stringliteral">&quot; objID &quot;</span> &lt;&lt; objID &lt;&lt; <span class="stringliteral">&quot; label &quot;</span> &lt;&lt; label </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            &lt;&lt; <span class="stringliteral">&quot; x &quot;</span> &lt;&lt; x &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; x*0.105 &lt;&lt; <span class="stringliteral">&quot; y &quot;</span> &lt;&lt; y &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; y*0.105 &lt;&lt; <span class="stringliteral">&quot; z &quot;</span> &lt;&lt; z &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; z*0.5 &lt;&lt; std::endl;        </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>};</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="class_b_d5_1_1_b_d5_file.html">   76</a></span><span class="keyword">class </span><a class="code hl_class" href="class_b_d5_1_1_b_d5_file.html">BD5File</a></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>{</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a25b884474309526ecf3cbc3196bcf3c8">BD5File</a>();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a25b884474309526ecf3cbc3196bcf3c8">BD5File</a>(<span class="keyword">const</span> std::string&amp; f);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a25b884474309526ecf3cbc3196bcf3c8">BD5File</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_b_d5_1_1_b_d5_file.html">BD5File</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_class" href="class_b_d5_1_1_b_d5_file.html">BD5File</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_b_d5_1_1_b_d5_file.html">BD5File</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    std::vector&lt;BD5::Snapshot&gt; <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a89fbb8f2804dc8438f4ba0f3f3b067cb">Read</a>(<span class="keyword">const</span> std::string&amp; f);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::vector&lt;BD5::Snapshot&gt; <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a89fbb8f2804dc8438f4ba0f3f3b067cb">Read</a>();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <a class="code hl_class" href="class_b_d5_1_1_data_set.html">BD5::DataSet</a> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a67470e1e5d1e16361b609f6adbd40ee8">ReadDataSet</a>(<span class="keyword">const</span> std::string&amp; setPath);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_class" href="class_b_d5_1_1_group.html">BD5::Group</a> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a50c7d972c015efb3b79e6da9f7841ba9">ReadGroup</a>(<span class="keyword">const</span> std::string&amp; groupPath);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    std::string <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#adb546d05f225a490b4caf7a0c770bf28">Name</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <a class="code hl_class" href="class_b_d5_1_1_scale_unit.html">BD5::ScaleUnit</a> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a359d70b673168aa546de0ddbeab50018">Scales</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#aad285b876fca396751cf4f06ac4104ff">ObjectsNames</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <a class="code hl_struct" href="struct_b_d5_1_1_boundaries.html">Boundaries</a> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a42064e7b0686100b53dc8e8eac9d6f1d">GetBoundaries</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a89ec6a88eee51cd8f6519ca4d10cef48">HasTracks</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    std::vector&lt;std::vector&lt;PointTrack&gt;&gt; <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#ae1b8308102e7e308a37f3c014779f098">GetTracks</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    std::vector&lt;std::vector&lt;std::string&gt;&gt; <a class="code hl_function" href="class_b_d5_1_1_b_d5_file.html#a34d2a5c1c0232bf490f6cb6cec74294e">GetLabelsAtTime</a>(<span class="keywordtype">int</span>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">void</span> Open(<span class="keyword">const</span> std::string&amp; f);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <a class="code hl_class" href="class_b_d5_1_1_scale_unit.html">BD5::ScaleUnit</a> GetScaleUnit(<a class="code hl_class" href="class_b_d5_1_1_data_set.html">BD5::DataSet</a>&amp;);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    std::vector&lt;std::string&gt; GetObjNames(<a class="code hl_class" href="class_b_d5_1_1_data_set.html">BD5::DataSet</a>&amp;);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    std::vector&lt;std::pair&lt;std::string, std::string&gt;&gt; GetRawTrackInfo(<a class="code hl_class" href="class_b_d5_1_1_data_set.html">BD5::DataSet</a>&amp;);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    std::vector&lt;std::vector&lt;std::string&gt;&gt; MakeTrackPaths(<span class="keyword">const</span> std::vector&lt;std::pair&lt;std::string, std::string&gt;&gt;&amp;);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    std::vector&lt;PointTrack&gt; WriteTrackInfo(<span class="keywordtype">int</span>, <span class="keyword">const</span> std::vector&lt;std::vector&lt;EntityData&gt;&gt;&amp;);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    std::vector&lt;std::vector&lt;PointTrack&gt;&gt; WriteTracksGeometry(<span class="keyword">const</span> std::vector&lt;std::vector&lt;std::string&gt;&gt;&amp;,</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                                        <span class="keyword">const</span> std::vector&lt;PointTrack&gt;&amp;);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    std::vector&lt;std::vector&lt;PointTrack&gt;&gt; CreateTracks(<span class="keyword">const</span> std::vector&lt;BD5::Snapshot&gt;&amp;, <span class="keyword">const</span> std::vector&lt;std::vector&lt;std::string&gt;&gt;&amp;);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <a class="code hl_class" href="class_b_d5_1_1_type_descriptor.html">TypeDescriptor</a> GetTypeDescriptor(<span class="keyword">const</span> H5::CompType&amp;);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <a class="code hl_enumeration" href="_type_descriptor_8h.html#af644a33b500c7efd647ab9cb37d08c30">ElementType</a> GetElementType(<span class="keyword">const</span> H5::CompType&amp;, <span class="keywordtype">int</span>);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    std::vector&lt;std::vector&lt;PointTrack&gt;&gt; tracks;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <a class="code hl_class" href="class_b_d5_1_1_scale_unit.html">BD5::ScaleUnit</a> scales;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    std::vector&lt;std::string&gt; objNames;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="comment">// Labels are ordered as: time_index, obj_index, label_index</span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    std::vector&lt;std::vector&lt;std::vector&lt;std::string&gt;&gt;&gt; labels;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    H5::H5File file;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <a class="code hl_struct" href="struct_b_d5_1_1_boundaries.html">BD5::Boundaries</a> boundaries;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <a class="code hl_struct" href="struct_b_d5_1_1_settings.html">Settings</a> settings;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <a class="code hl_class" href="class_logger.html">Logger</a> logger;    </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>};</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>}</div>
 <div class="ttc" id="a_data_set_8h_html"><div class="ttname"><a href="_data_set_8h.html">DataSet.h</a></div><div class="ttdoc">Class for reading and describing a BD5 dataset.</div></div>
 <div class="ttc" id="a_group_8h_html"><div class="ttname"><a href="_group_8h.html">Group.h</a></div><div class="ttdoc">Class for reading and describing a BD5 Group.</div></div>
 <div class="ttc" id="a_logger_8h_html"><div class="ttname"><a href="_logger_8h.html">Logger.h</a></div><div class="ttdoc">A simple multithreading logger system.</div></div>
@@ -145,21 +177,26 @@ $(function() {
 <div class="ttc" id="a_scale_unit_8h_html"><div class="ttname"><a href="_scale_unit_8h.html">ScaleUnit.h</a></div><div class="ttdoc">Class to represent the Scales applied to the overall geometries contained in BD5 files.</div></div>
 <div class="ttc" id="a_snapshot_8h_html"><div class="ttname"><a href="_snapshot_8h.html">Snapshot.h</a></div><div class="ttdoc">Class representing a snapshot of Geometry contained in the BD5 at a specific time.</div></div>
 <div class="ttc" id="a_type_descriptor_8h_html_af644a33b500c7efd647ab9cb37d08c30"><div class="ttname"><a href="_type_descriptor_8h.html#af644a33b500c7efd647ab9cb37d08c30">BD5::ElementType</a></div><div class="ttdeci">ElementType</div><div class="ttdoc">BD5 types are based on HDF5 types. On HDF5 types many different interpretations are possible based on...</div><div class="ttdef"><b>Definition:</b> TypeDescriptor.h:34</div></div>
-<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html">BD5::BD5File</a></div><div class="ttdoc">Class for reading and describing a BD5 file.</div><div class="ttdef"><b>Definition:</b> BD5File.h:57</div></div>
-<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a25b884474309526ecf3cbc3196bcf3c8"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a25b884474309526ecf3cbc3196bcf3c8">BD5::BD5File::BD5File</a></div><div class="ttdeci">BD5File()</div><div class="ttdoc">Construct a new BD5File object.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:11</div></div>
-<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a359d70b673168aa546de0ddbeab50018"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a359d70b673168aa546de0ddbeab50018">BD5::BD5File::Scales</a></div><div class="ttdeci">BD5::ScaleUnit Scales() const</div><div class="ttdoc">Get the BD5 Scales units.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:589</div></div>
-<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a42064e7b0686100b53dc8e8eac9d6f1d"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a42064e7b0686100b53dc8e8eac9d6f1d">BD5::BD5File::GetBoundaries</a></div><div class="ttdeci">Boundaries GetBoundaries() const</div><div class="ttdoc">Get the minimum and maximum coordinates of the geometry.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:594</div></div>
-<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a50c7d972c015efb3b79e6da9f7841ba9"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a50c7d972c015efb3b79e6da9f7841ba9">BD5::BD5File::ReadGroup</a></div><div class="ttdeci">BD5::Group ReadGroup(const std::string &amp;groupPath)</div><div class="ttdoc">Read a group.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:528</div></div>
-<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a67470e1e5d1e16361b609f6adbd40ee8"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a67470e1e5d1e16361b609f6adbd40ee8">BD5::BD5File::ReadDataSet</a></div><div class="ttdeci">BD5::DataSet ReadDataSet(const std::string &amp;setPath)</div><div class="ttdoc">Read a dataset.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:475</div></div>
-<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a89fbb8f2804dc8438f4ba0f3f3b067cb"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a89fbb8f2804dc8438f4ba0f3f3b067cb">BD5::BD5File::Read</a></div><div class="ttdeci">std::vector&lt; BD5::Snapshot &gt; Read()</div><div class="ttdoc">Read the vector of BD5 snapshots from current stored file path.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:246</div></div>
-<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_adb546d05f225a490b4caf7a0c770bf28"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#adb546d05f225a490b4caf7a0c770bf28">BD5::BD5File::Name</a></div><div class="ttdeci">std::string Name() const</div><div class="ttdoc">File path.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:584</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html">BD5::BD5File</a></div><div class="ttdoc">Class for reading and describing a BD5 file.</div><div class="ttdef"><b>Definition:</b> BD5File.h:77</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a25b884474309526ecf3cbc3196bcf3c8"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a25b884474309526ecf3cbc3196bcf3c8">BD5::BD5File::BD5File</a></div><div class="ttdeci">BD5File()</div><div class="ttdoc">Construct a new BD5File object.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:35</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a34d2a5c1c0232bf490f6cb6cec74294e"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a34d2a5c1c0232bf490f6cb6cec74294e">BD5::BD5File::GetLabelsAtTime</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; std::string &gt; &gt; GetLabelsAtTime(int)</div><div class="ttdoc">Get the labels corresponding to the time t.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:869</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a359d70b673168aa546de0ddbeab50018"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a359d70b673168aa546de0ddbeab50018">BD5::BD5File::Scales</a></div><div class="ttdeci">BD5::ScaleUnit Scales() const</div><div class="ttdoc">Get the BD5 Scales units.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:844</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a42064e7b0686100b53dc8e8eac9d6f1d"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a42064e7b0686100b53dc8e8eac9d6f1d">BD5::BD5File::GetBoundaries</a></div><div class="ttdeci">Boundaries GetBoundaries() const</div><div class="ttdoc">Get the minimum and maximum coordinates of the geometry.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:854</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a50c7d972c015efb3b79e6da9f7841ba9"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a50c7d972c015efb3b79e6da9f7841ba9">BD5::BD5File::ReadGroup</a></div><div class="ttdeci">BD5::Group ReadGroup(const std::string &amp;groupPath)</div><div class="ttdoc">Read a group.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:783</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a67470e1e5d1e16361b609f6adbd40ee8"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a67470e1e5d1e16361b609f6adbd40ee8">BD5::BD5File::ReadDataSet</a></div><div class="ttdeci">BD5::DataSet ReadDataSet(const std::string &amp;setPath)</div><div class="ttdoc">Read a dataset.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:730</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a89ec6a88eee51cd8f6519ca4d10cef48"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a89ec6a88eee51cd8f6519ca4d10cef48">BD5::BD5File::HasTracks</a></div><div class="ttdeci">bool HasTracks() const</div><div class="ttdoc">Indicates if the dataset contains track info.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:859</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_a89fbb8f2804dc8438f4ba0f3f3b067cb"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#a89fbb8f2804dc8438f4ba0f3f3b067cb">BD5::BD5File::Read</a></div><div class="ttdeci">std::vector&lt; BD5::Snapshot &gt; Read()</div><div class="ttdoc">Read the vector of BD5 snapshots from current stored file path.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:387</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_aad285b876fca396751cf4f06ac4104ff"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#aad285b876fca396751cf4f06ac4104ff">BD5::BD5File::ObjectsNames</a></div><div class="ttdeci">std::vector&lt; std::string &gt; ObjectsNames() const</div><div class="ttdoc">Get Object definitions.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:849</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_adb546d05f225a490b4caf7a0c770bf28"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#adb546d05f225a490b4caf7a0c770bf28">BD5::BD5File::Name</a></div><div class="ttdeci">std::string Name() const</div><div class="ttdoc">File path.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:839</div></div>
+<div class="ttc" id="aclass_b_d5_1_1_b_d5_file_html_ae1b8308102e7e308a37f3c014779f098"><div class="ttname"><a href="class_b_d5_1_1_b_d5_file.html#ae1b8308102e7e308a37f3c014779f098">BD5::BD5File::GetTracks</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; PointTrack &gt; &gt; GetTracks() const</div><div class="ttdoc">Get the a list of tracks described as PointTrack.</div><div class="ttdef"><b>Definition:</b> BD5File.cpp:864</div></div>
 <div class="ttc" id="aclass_b_d5_1_1_data_set_html"><div class="ttname"><a href="class_b_d5_1_1_data_set.html">BD5::DataSet</a></div><div class="ttdoc">Class for reading and describing a BD5 dataset.</div><div class="ttdef"><b>Definition:</b> DataSet.h:25</div></div>
 <div class="ttc" id="aclass_b_d5_1_1_group_html"><div class="ttname"><a href="class_b_d5_1_1_group.html">BD5::Group</a></div><div class="ttdoc">Class for reading and describing a BD5 Group.</div><div class="ttdef"><b>Definition:</b> Group.h:24</div></div>
 <div class="ttc" id="aclass_b_d5_1_1_scale_unit_html"><div class="ttname"><a href="class_b_d5_1_1_scale_unit.html">BD5::ScaleUnit</a></div><div class="ttdoc">Class to represent the Scales applied to the overall geometries contained in BD5 files.</div><div class="ttdef"><b>Definition:</b> ScaleUnit.h:43</div></div>
 <div class="ttc" id="aclass_b_d5_1_1_type_descriptor_html"><div class="ttname"><a href="class_b_d5_1_1_type_descriptor.html">BD5::TypeDescriptor</a></div><div class="ttdoc">Class representing a BD5 Compound type. A compound type is composed by several basic BD5 types Basic ...</div><div class="ttdef"><b>Definition:</b> TypeDescriptor.h:207</div></div>
 <div class="ttc" id="aclass_logger_html"><div class="ttname"><a href="class_logger.html">Logger</a></div><div class="ttdoc">Class defining a simple logger system. The class consider to operate on a multithreaded application.</div><div class="ttdef"><b>Definition:</b> Logger.h:40</div></div>
-<div class="ttc" id="astruct_b_d5_1_1_boundaries_html"><div class="ttname"><a href="struct_b_d5_1_1_boundaries.html">BD5::Boundaries</a></div><div class="ttdoc">The minimum and maximum coordinates of the geometry.</div><div class="ttdef"><b>Definition:</b> BD5File.h:43</div></div>
-<div class="ttc" id="astruct_b_d5_1_1_settings_html"><div class="ttname"><a href="struct_b_d5_1_1_settings.html">BD5::Settings</a></div><div class="ttdoc">BD5 general settings.</div><div class="ttdef"><b>Definition:</b> BD5File.h:31</div></div>
+<div class="ttc" id="astruct_b_d5_1_1_boundaries_html"><div class="ttname"><a href="struct_b_d5_1_1_boundaries.html">BD5::Boundaries</a></div><div class="ttdoc">The minimum and maximum coordinates of the geometry.</div><div class="ttdef"><b>Definition:</b> BD5File.h:45</div></div>
+<div class="ttc" id="astruct_b_d5_1_1_point_track_html"><div class="ttname"><a href="struct_b_d5_1_1_point_track.html">BD5::PointTrack</a></div><div class="ttdoc">Description of a point in a track.</div><div class="ttdef"><b>Definition:</b> BD5File.h:59</div></div>
+<div class="ttc" id="astruct_b_d5_1_1_settings_html"><div class="ttname"><a href="struct_b_d5_1_1_settings.html">BD5::Settings</a></div><div class="ttdoc">BD5 general settings.</div><div class="ttdef"><b>Definition:</b> BD5File.h:32</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

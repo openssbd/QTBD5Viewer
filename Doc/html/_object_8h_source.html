@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>QTBD5Viewer: BD5/include/Object.h Source File</title>
+<title>QtBD5Viewer: C:/Users/Miranda Miguel/Documents/Programs/C++/HDF5/qtbd5viewer/BD5/include/Object.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,9 +21,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">QTBD5Viewer
+   <div id="projectname">QtBD5Viewer
    </div>
-   <div id="projectbrief">A simple visualizer for BD5 files</div>
+   <div id="projectbrief">SSBD visualizer based on HDF library to visualize BD5-format files</div>
   </td>
  </tr>
  </tbody>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_c0330699e998cfbd13f692af397a55d9.html">BD5</a></li><li class="navelem"><a class="el" href="dir_04464707edfc2b5170e9ac8b7a8af022.html">include</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d522931ffa1371640980b621734a4381.html">Users</a></li><li class="navelem"><a class="el" href="dir_2dc13eeb48bf9fd3c4699415a3c57b63.html">Miranda Miguel</a></li><li class="navelem"><a class="el" href="dir_9df1f28d021ef80bc07d23a97604761e.html">Documents</a></li><li class="navelem"><a class="el" href="dir_9476ed0bb0b99f14369c1ab24451231b.html">Programs</a></li><li class="navelem"><a class="el" href="dir_fb39b9e1b71d88f4e99262834c09c447.html">C++</a></li><li class="navelem"><a class="el" href="dir_c79a904eb7b03947f8c9b3be2cd23866.html">HDF5</a></li><li class="navelem"><a class="el" href="dir_3f4beba661a2ab05494fc8c35d49808e.html">qtbd5viewer</a></li><li class="navelem"><a class="el" href="dir_8d71c4bd8e77a5029a3e9d14af4718f8.html">BD5</a></li><li class="navelem"><a class="el" href="dir_fd965826a24a015c6b859a287d29e7cb.html">include</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -128,12 +128,13 @@ $(function() {
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <a class="code hl_enumeration" href="_object_8h.html#a3d6baeb106cc9e7568430e46677a6ed1">EntityType</a> EntityTypeAtSubObject(<span class="keywordtype">int</span>) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keyword">const</span> std::vector&lt;EntityData&gt;&amp; GetEntitiesAtSubObjectNoSID(<span class="keywordtype">int</span>) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keyword">const</span> std::vector&lt;EntityData&gt;&amp; GetEntitiesAtSubObjectBySID(<span class="keywordtype">int</span>, <span class="keywordtype">int</span>) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="comment">// Entities are stored as [first:object_type, second:Entities_list]::[sID (line and poly)]::[list_entities]</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    std::vector&lt; std::pair&lt;EntityType, std::vector&lt;std::vector&lt;EntityData&gt;&gt; &gt; &gt; data;</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>};</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>}</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">int</span> GetNumSubObjects() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="comment">// Entities are stored as [first:object_type, second:Entities_list]::[sID (line and poly)]::[list_entities]</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    std::vector&lt; std::pair&lt;EntityType, std::vector&lt;std::vector&lt;EntityData&gt;&gt; &gt; &gt; data;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>};</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}</div>
 <div class="ttc" id="a_object_8h_html_a3d6baeb106cc9e7568430e46677a6ed1"><div class="ttname"><a href="_object_8h.html#a3d6baeb106cc9e7568430e46677a6ed1">BD5::EntityType</a></div><div class="ttdeci">EntityType</div><div class="ttdoc">The geometric elements used in BD5 files.</div><div class="ttdef"><b>Definition:</b> Object.h:28</div></div>
 <div class="ttc" id="aclass_b_d5_1_1_object_html"><div class="ttname"><a href="class_b_d5_1_1_object.html">BD5::Object</a></div><div class="ttdoc">Class to represent an object (In a BD5 file an object is contained in a group. And it has a list of d...</div><div class="ttdef"><b>Definition:</b> Object.h:131</div></div>
 <div class="ttc" id="astruct_b_d5_1_1_entity_data_html"><div class="ttname"><a href="struct_b_d5_1_1_entity_data.html">BD5::EntityData</a></div><div class="ttdoc">Generic representation of the data describing the geometric elements Notice that we use a map (dictio...</div><div class="ttdef"><b>Definition:</b> Object.h:52</div></div>

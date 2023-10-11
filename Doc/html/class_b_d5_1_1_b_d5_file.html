@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>QTBD5Viewer: BD5::BD5File Class Reference</title>
+<title>QtBD5Viewer: BD5::BD5File Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,9 +21,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">QTBD5Viewer
+   <div id="projectname">QtBD5Viewer
    </div>
-   <div id="projectbrief">A simple visualizer for BD5 files</div>
+   <div id="projectbrief">SSBD visualizer based on HDF library to visualize BD5-format files</div>
   </td>
  </tr>
  </tbody>
@@ -118,9 +118,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a359d70b673168aa546de0ddbeab50018"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_b_d5_1_1_scale_unit.html">BD5::ScaleUnit</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_d5_1_1_b_d5_file.html#a359d70b673168aa546de0ddbeab50018">Scales</a> () const</td></tr>
 <tr class="memdesc:a359d70b673168aa546de0ddbeab50018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the BD5 Scales units.  <a href="class_b_d5_1_1_b_d5_file.html#a359d70b673168aa546de0ddbeab50018">More...</a><br /></td></tr>
 <tr class="separator:a359d70b673168aa546de0ddbeab50018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad285b876fca396751cf4f06ac4104ff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_d5_1_1_b_d5_file.html#aad285b876fca396751cf4f06ac4104ff">ObjectsNames</a> () const</td></tr>
+<tr class="memdesc:aad285b876fca396751cf4f06ac4104ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="class_b_d5_1_1_object.html" title="Class to represent an object (In a BD5 file an object is contained in a group. And it has a list of d...">Object</a> definitions.  <a href="class_b_d5_1_1_b_d5_file.html#aad285b876fca396751cf4f06ac4104ff">More...</a><br /></td></tr>
+<tr class="separator:aad285b876fca396751cf4f06ac4104ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42064e7b0686100b53dc8e8eac9d6f1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_b_d5_1_1_boundaries.html">Boundaries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_d5_1_1_b_d5_file.html#a42064e7b0686100b53dc8e8eac9d6f1d">GetBoundaries</a> () const</td></tr>
 <tr class="memdesc:a42064e7b0686100b53dc8e8eac9d6f1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the minimum and maximum coordinates of the geometry.  <a href="class_b_d5_1_1_b_d5_file.html#a42064e7b0686100b53dc8e8eac9d6f1d">More...</a><br /></td></tr>
 <tr class="separator:a42064e7b0686100b53dc8e8eac9d6f1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89ec6a88eee51cd8f6519ca4d10cef48"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_d5_1_1_b_d5_file.html#a89ec6a88eee51cd8f6519ca4d10cef48">HasTracks</a> () const</td></tr>
+<tr class="memdesc:a89ec6a88eee51cd8f6519ca4d10cef48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates if the dataset contains track info.  <a href="class_b_d5_1_1_b_d5_file.html#a89ec6a88eee51cd8f6519ca4d10cef48">More...</a><br /></td></tr>
+<tr class="separator:a89ec6a88eee51cd8f6519ca4d10cef48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1b8308102e7e308a37f3c014779f098"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="struct_b_d5_1_1_point_track.html">PointTrack</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_d5_1_1_b_d5_file.html#ae1b8308102e7e308a37f3c014779f098">GetTracks</a> () const</td></tr>
+<tr class="memdesc:ae1b8308102e7e308a37f3c014779f098"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the a list of tracks described as <a class="el" href="struct_b_d5_1_1_point_track.html" title="Description of a point in a track.">PointTrack</a>.  <a href="class_b_d5_1_1_b_d5_file.html#ae1b8308102e7e308a37f3c014779f098">More...</a><br /></td></tr>
+<tr class="separator:ae1b8308102e7e308a37f3c014779f098"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34d2a5c1c0232bf490f6cb6cec74294e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_b_d5_1_1_b_d5_file.html#a34d2a5c1c0232bf490f6cb6cec74294e">GetLabelsAtTime</a> (int)</td></tr>
+<tr class="memdesc:a34d2a5c1c0232bf490f6cb6cec74294e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the labels corresponding to the time t.  <a href="class_b_d5_1_1_b_d5_file.html#a34d2a5c1c0232bf490f6cb6cec74294e">More...</a><br /></td></tr>
+<tr class="separator:a34d2a5c1c0232bf490f6cb6cec74294e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Class for reading and describing a BD5 file. </p>
@@ -207,6 +219,68 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a34d2a5c1c0232bf490f6cb6cec74294e" name="a34d2a5c1c0232bf490f6cb6cec74294e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34d2a5c1c0232bf490f6cb6cec74294e">&#9670;&#160;</a></span>GetLabelsAtTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vector&lt; vector&lt; string &gt; &gt; BD5File::GetLabelsAtTime </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the labels corresponding to the time t. </p>
+
+</div>
+</div>
+<a id="ae1b8308102e7e308a37f3c014779f098" name="ae1b8308102e7e308a37f3c014779f098"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1b8308102e7e308a37f3c014779f098">&#9670;&#160;</a></span>GetTracks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vector&lt; vector&lt; <a class="el" href="struct_b_d5_1_1_point_track.html">PointTrack</a> &gt; &gt; BD5File::GetTracks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the a list of tracks described as <a class="el" href="struct_b_d5_1_1_point_track.html" title="Description of a point in a track.">PointTrack</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;std::vector&lt;PointTrack&gt;&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a89ec6a88eee51cd8f6519ca4d10cef48" name="a89ec6a88eee51cd8f6519ca4d10cef48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ec6a88eee51cd8f6519ca4d10cef48">&#9670;&#160;</a></span>HasTracks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool BD5File::HasTracks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Indicates if the dataset contains track info. </p>
+<dl class="section return"><dt>Returns</dt><dd>true </dd>
+<dd>
+false </dd></dl>
+
+</div>
+</div>
 <a id="adb546d05f225a490b4caf7a0c770bf28" name="adb546d05f225a490b4caf7a0c770bf28"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adb546d05f225a490b4caf7a0c770bf28">&#9670;&#160;</a></span>Name()</h2>
 
@@ -224,6 +298,26 @@ Public Member Functions</h2></td></tr>
 
 <p>File path. </p>
 <dl class="section return"><dt>Returns</dt><dd>* std::string File path </dd></dl>
+
+</div>
+</div>
+<a id="aad285b876fca396751cf4f06ac4104ff" name="aad285b876fca396751cf4f06ac4104ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad285b876fca396751cf4f06ac4104ff">&#9670;&#160;</a></span>ObjectsNames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vector&lt; string &gt; BD5File::ObjectsNames </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get <a class="el" href="class_b_d5_1_1_object.html" title="Class to represent an object (In a BD5 file an object is contained in a group. And it has a list of d...">Object</a> definitions. </p>
+<dl class="section return"><dt>Returns</dt><dd>vector&lt;string&gt; A vector containing the object names </dd></dl>
 
 </div>
 </div>
@@ -349,8 +443,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>BD5/include/<a class="el" href="_b_d5_file_8h_source.html">BD5File.h</a></li>
-<li>BD5/src/BD5File.cpp</li>
+<li>C:/Users/Miranda Miguel/Documents/Programs/C++/HDF5/qtbd5viewer/BD5/include/<a class="el" href="_b_d5_file_8h_source.html">BD5File.h</a></li>
+<li>C:/Users/Miranda Miguel/Documents/Programs/C++/HDF5/qtbd5viewer/BD5/src/BD5File.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
