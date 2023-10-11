@@ -480,14 +480,16 @@ void GLWidget::initializeGamepad(QWidget* w)
     connect(m_gamepad, &QGamepad::axisLeftXChanged, w, 
             [&](double value) { 
                 // qDebug() << "Jockstick Left X" << value;
-                cameraZ -= deltaZ * value;
+                float factor = m_gamepad->buttonR1() ? 100 : 10;
+                cameraZ -= deltaZ * value * factor;
                 update();
                 if ((value >= 1.0) || (value <= -0.99))
                 {
                     auto eval = [game=m_gamepad, this]() -> float
                     {
                         float newValue = game->axisLeftX();
-                        cameraZ -= deltaZ * newValue;
+                        float factor = game->buttonR1() ? 100 : 10;
+                        cameraZ -= deltaZ * newValue * factor;
                         update();
                         return newValue;
                     };
@@ -496,15 +498,17 @@ void GLWidget::initializeGamepad(QWidget* w)
             });
     connect(m_gamepad, &QGamepad::axisLeftYChanged, w, 
             [&](double value) { 
-                // qDebug() << "Jockstick Left Y" << value; 
-                cameraZ += deltaZ * value;
+                // qDebug() << "Jockstick Left Y" << value;
+                float factor = m_gamepad->buttonR1() ? 100 : 10;
+                cameraZ += deltaZ * value * 10;
                 update();
                 if ((value >= 1.0) || (value <= -0.99))
                 {
                     auto eval = [game=m_gamepad, this]() -> float
                     {
                         float newValue = game->axisLeftY();
-                        cameraZ += deltaZ * newValue;
+                        float factor = game->buttonR1() ? 100 : 10;
+                        cameraZ += deltaZ * newValue * factor;
                         update();
                         return newValue;
                     };
@@ -657,15 +661,13 @@ void GLWidget::initializeGamepad(QWidget* w)
                     }
                 }
             });
-    // connect(m_gamepad, &QGamepad::buttonSelectChanged, w, [](bool pressed)
-    //         { 
+    // connect(m_gamepad, &QGamepad::buttonSelectChanged, w, [](bool pressed) { 
     //             qDebug() << "Button Select" << pressed;
     //         });
-    // connect(m_gamepad, &QGamepad::buttonStartChanged, w,
-    //         [this](bool pressed) {
-    //             qDebug() << "Button Start" << pressed;
-    //             resetPosition();
-    //         });
+    connect(m_gamepad, &QGamepad::buttonStartChanged, w,
+            [this](bool pressed) {
+                resetPosition();               
+            });
     // connect(m_gamepad, &QGamepad::buttonGuideChanged, w, [](bool pressed)
     //         { 
     //             qDebug() << "Button Guide" << pressed;
